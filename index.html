@@ -128,6 +128,7 @@ body.fsm #fs{display:none}
 var SECTIONS=[{id:'skeleton',title:'Скелет',desc:'3D-модель: вращайте, приближайте, нажимайте на кости'},{id:'muscles',title:'Мышцы',desc:'3D-модель мышечной системы человека'}];
 var w=document.getElementById('welcome'),sp=document.getElementById('splash'),box=document.getElementById('secs');
 function closeMenu(){w.classList.add('out');setTimeout(function(){w.style.display='none'},700)}
+window.showMenu=function(){w.style.display='';w.classList.add('show');requestAnimationFrame(function(){w.classList.remove('out')})};
 SECTIONS.forEach(function(s){var b=document.createElement('button');b.type='button';b.className='sec'+(s.soon?' soon':'');b.disabled=!!s.soon;
  b.innerHTML='<span><b>'+s.title+'</b><em>'+(s.soon?'Скоро':s.desc)+'</em></span><i>›</i>';
  if(!s.soon)b.onclick=function(){if(s.id==='muscles'){location.href='muscles.html'}else{closeMenu()}};box.appendChild(b)});
@@ -153,6 +154,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s){s.classList.
     <button id="grid" aria-pressed="true">Сетка</button><button id="spin" aria-pressed="false">Авто-вращение</button>
     <button id="reset">Сбросить вид</button>
     <button id="ref">Справочник</button>
+    <button id="homeBtn">☰ Меню</button>
     <button id="notesBtn" aria-pressed="true">Показать примечания</button>
    </div>
   </div>
@@ -285,6 +287,7 @@ function render_list(){
 function openRef(){refSec=null;render_list();document.getElementById('ref-ov').hidden=false}
 function closeRef(){document.getElementById('ref-ov').hidden=true}
 document.getElementById('ref').onclick=openRef;
+document.getElementById('homeBtn').onclick=()=>{if(window.showMenu)window.showMenu()};
 document.getElementById('ref-x').onclick=closeRef;
 function select(i){
  if(sel>=0)meshes[sel].material=matBase;

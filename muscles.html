@@ -1,77 +1,391 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Атлас анатомии — мышцы</title><meta name="theme-color" content="#000000">
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Атлас анатомии — мышцы человека</title>
+<meta name="theme-color" content="#000000">
+<meta name="application-name" content="Атлас анатомии">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Атлас">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:#000;color:#ececf0;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-#app{display:grid;grid-template-columns:minmax(0,1fr) 350px;height:100%}#view{position:relative;min-width:0}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}
-#panel{background:#000;border-left:1px solid #2b2b2b;display:flex;flex-direction:column;min-height:0;overflow:hidden}#head{padding:12px 14px;border-bottom:1px solid #2b2b2b}h1{font-size:1.05rem;margin:0 0 8px;font-weight:600}.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-button{font:inherit;font-size:.84rem;padding:7px 10px;border-radius:8px;border:1px solid #555;background:#000;color:#fff;cursor:pointer}button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#000;font-weight:600}button:disabled{opacity:.4}
-#search{width:100%;padding:9px 10px;border-radius:8px;border:1px solid #333;background:#080808;color:#ececf0;font:inherit;margin-top:9px}#groups{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}#list{flex:1;overflow:auto;padding:7px 8px 14px;min-height:0}.item{display:block;width:100%;text-align:left;border:0;background:transparent;padding:8px 9px;border-radius:7px;font-size:.9rem;color:#dcdde3}.item:hover{background:#161616}.item.active{background:#fff;color:#000;font-weight:600}
-#info{padding:12px 14px;border-top:1px solid #2b2b2b;min-height:74px}#info b{display:block;margin-bottom:4px}#info span{font-size:.82rem;color:#a2a5ae}#status{font-size:.78rem;color:#a2a5ae;padding:8px 14px;border-top:1px solid #2b2b2b}
-#toolbar{position:absolute;left:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 24px);z-index:3}#toolbar button{background:rgba(0,0,0,.8);backdrop-filter:blur(8px)}#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;color:#aaa;z-index:2;text-align:center;padding:24px}
-@media(max-width:760px){#app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 44vh}#panel{border-left:0;border-top:1px solid #2b2b2b}#view{min-height:0}#head{padding:8px 10px}#list{padding:4px 7px}#info{min-height:56px;padding:8px 10px}#status{padding:5px 10px}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000000;color:#ececf0;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#app{display:grid;grid-template-columns:1fr 320px;height:100%}
+#view{position:relative;min-width:0}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+canvas:active{cursor:grabbing}
+#panel{background:#000000;border-left:1px solid #2b2b2b;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+#head{padding:12px 14px;border-bottom:1px solid #2b2b2b}
+h1{font-size:1.05rem;margin:0 0 8px}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;font-size:.85rem;padding:7px 10px;border-radius:8px;border:1px solid #555;background:#000000;color:#fff;cursor:pointer}
+button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#000;font-weight:600}
+#info{padding:12px 14px;border-bottom:1px solid #2b2b2b;min-height:70px}
+#info b{display:block;font-size:1rem;margin-bottom:4px}
+#info span{color:#a2a5ae;font-size:.85rem}
+#search{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #333;background:#000000;color:#ececf0;font:inherit}
+#list{flex:1;overflow:auto;padding:6px 8px 12px;min-height:0}
+#note{padding:10px 14px;border-top:1px solid #2b2b2b;font-size:.92rem;line-height:1.45}
+#note b{display:block;margin-bottom:4px;font-size:1rem}
+#note li{margin:2px 0}
+#note{max-height:38vh;overflow:auto}
+.it{display:block;width:100%;text-align:left;border:0;background:transparent;padding:7px 8px;border-radius:6px;font-size:.9rem;color:#dcdde3}
+.it:hover{background:#161616}
+.it.on{background:#fff;color:#000;font-weight:600}
+#foot{padding:8px 14px;font-size:.75rem;color:#8a8d97;border-top:1px solid #2b2b2b}
+#grpWrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease;overflow:hidden}
+#grpWrap.open{grid-template-rows:1fr}
+#grpWrap>.row{min-height:0;overflow:hidden;opacity:0;transform:translateY(-10px);transition:transform .35s ease,opacity .35s ease;padding-top:6px}
+#grpWrap.open>.row{opacity:1;transform:none}
+.chbox{margin:auto;background:#000000;border:1px solid #2b2b2b;border-radius:12px;padding:16px;width:min(320px,88vw);display:flex;flex-direction:column;gap:8px}
+.chbox p{margin:0 0 4px;font-weight:600}
+.chbox button{width:100%;padding:11px}
+#callout{position:absolute;inset:0;pointer-events:none;display:none}
+#labs{position:absolute;inset:0;pointer-events:none;display:none}
+#labsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;display:none}
+.lab{position:absolute;background:rgba(0,0,0,.9);border:1px solid #3ddc84;color:#fff;padding:4px 8px;border-radius:7px;font-size:.82rem;white-space:nowrap}
+body.fsm #app{grid-template-columns:1fr}
+body.fsm #panel{display:none}
+body.fsm #view{position:fixed;inset:0;z-index:5;background:#000000}
+#head{position:relative}
+#head h1{padding-right:52px}
+#fs{position:absolute;top:10px;right:10px;width:42px;height:42px;padding:0;font-size:1.25rem;z-index:15;display:flex;align-items:center;justify-content:center;border-radius:10px}
+#modes{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;z-index:12}
+#modes button{padding:11px 13px;font-size:.9rem;background:#000000}
+#modes button[aria-pressed="true"]{background:#fff;color:#000}
+#fsx{left:10px;border-color:#fff;display:none;z-index:50}
+body.fsm #fsx{display:block;left:56px}
+#about{position:absolute;top:8px;left:10px;width:22px;height:22px;padding:0;border:0;border-radius:0;background:transparent;color:#8a8d97;font-size:.85rem;line-height:1;z-index:12}
+.abox{margin:auto;background:#000000;border:1px solid #555;border-radius:12px;padding:18px;width:min(360px,90vw);font-size:.9rem;line-height:1.5;color:#dcdde3}
+.abox b{display:block;margin:10px 0 2px;color:#fff}.abox b:first-child{margin-top:0}
+.abox button{width:100%;margin-top:14px;padding:10px}
+body.fsm #fs{display:none}
+#callout svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#cl{position:absolute;top:0;left:0;max-width:46%;background:rgba(0,0,0,.9);border:1.5px solid #3ddc84;color:#fff;padding:7px 11px;border-radius:9px;font-size:.92rem;font-weight:600;line-height:1.3;white-space:normal}
+.fsbtn{position:fixed;top:10px;z-index:50;height:42px;padding:0 14px;border-radius:10px;background:#000000;border:1.5px solid #555;color:#fff;font:600 .95rem system-ui,sans-serif}
+.ov{position:fixed;inset:0;z-index:20;background:#000000;display:flex;flex-direction:column}
+.ov[hidden]{display:none}
+.ovh{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #2b2b2b}
+.ovh b{font-size:1.05rem}
+#ref-list{flex:1;overflow:auto;padding:58px 10px 24px}
+.it.sec{display:flex;justify-content:space-between;align-items:center;font-size:1rem;padding:14px 12px;border:1px solid #2b2b2b;border-radius:10px;margin:6px 0}
+.gh{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:#a2a5ae;margin:16px 6px 4px}
+@media (max-width:760px){
+ #app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46vh)}
+ #panel{border-left:0;border-top:1px solid #2b2b2b}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;color:#a2a5ae;z-index:30;text-align:center;padding:24px}
+#msearch{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#000;color:#ececf0;font:inherit;margin:0 0 8px}
+#note button{width:100%;margin-top:8px;padding:9px}
+.hint{color:#a2a5ae;font-size:.85rem;padding:12px 14px}
 </style></head><body>
-<div id="app"><main id="view"><canvas id="c"></canvas><div id="loading">Загрузка 3D-модели мышц…</div>
-<div id="toolbar"><button id="home">← Главное меню</button><button id="isolate" disabled>Изолировать</button><button id="grid" aria-pressed="true">Сетка</button><button id="spin" aria-pressed="false">Авто-вращение</button><button id="reset">Сбросить вид</button></div></main>
-<aside id="panel"><div id="head"><h1>Мышцы человека</h1><div class="row"><button id="all" aria-pressed="true">Справочник мышц</button></div><input id="search" placeholder="Поиск мышцы…" autocomplete="off"></div><div id="list"></div><div id="info"><b>Выберите мышцу</b><span>Нажмите на название в списке или на 3D-модели</span></div><div id="status">BodyParts3D, (c) The Database Center for Life Science · CC BY-SA 2.1 Japan</div></aside></div>
+<div id="app">
+ <div id="view"><canvas id="c"></canvas>
+  <div id="callout"><svg><line id="ln" stroke="#3ddc84" stroke-width="2"/><circle id="pt" r="5" fill="#3ddc84" stroke="#000" stroke-width="2"/></svg><div id="cl"></div></div>
+  <button id="about" aria-label="Об атласе">?</button>
+  <div id="modes"><button id="mRot" aria-pressed="true">↻ Вращение</button><button id="mPan" aria-pressed="false">✥ Движение</button></div>
+  <div id="loading">Загрузка 3D-модели мышц…</div>
+ </div>
+ <aside id="panel">
+  <div id="head">
+   <button id="fs" aria-label="Развернуть на весь экран" title="Развернуть">⤢</button>
+   <h1>Атлас мышц человека</h1>
+   <div class="row"><button id="toggleG" aria-pressed="false">Все ▾</button></div>
+   <div id="grpWrap"><div class="row" id="grp"></div></div>
+   <div class="row" style="margin-top:6px">
+    <button id="lang" aria-pressed="false">RU</button>
+    <button id="grid" aria-pressed="true">Сетка</button><button id="spin" aria-pressed="false">Авто-вращение</button>
+    <button id="reset">Сбросить вид</button>
+    <button id="ref">Справочник</button>
+    <button id="home">☰ Меню</button>
+   </div>
+  </div>
+  <div id="note"><span class="hint">Нажмите на мышцу на модели или откройте «Справочник»</span></div>
+  <div id="foot">BodyParts3D, © DBCLS · CC BY-SA 2.1 JP</div>
+ </aside>
+</div>
+<button id="fsx" class="fsbtn" aria-label="Свернуть в меню">✕ Свернуть</button>
+
+<div id="ch-ov" class="ov" hidden><div class="chbox">
+ <p id="ch-t"></p>
+ <button id="ch-m">Показать на макете</button>
+ <button id="ch-i">Показать изолированно</button>
+ <button id="ch-c">Отмена</button>
+</div></div>
+<div id="about-ov" class="ov" hidden><div class="abox" id="abox"></div></div>
+<div id="ref-ov" class="ov" hidden>
+ <button id="ref-x" class="fsbtn" style="right:10px;width:42px;padding:0;font-size:1.2rem" aria-label="Закрыть">✕</button>
+ <div id="ref-list"></div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="muscle_data.js"></script>
 <script>
 (async function(){
- const M=MUSCLE_META,items=M.items,groups=['Все мышцы','Голова и шея','Туловище','Верхняя конечность','Нижняя конечность','Таз и промежность'];
- const canvas=document.getElementById('c'),loading=document.getElementById('loading');
- const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setClearColor(0x000000,1);
- const scene=new THREE.Scene();scene.background=new THREE.Color(0x000000);
- const camera=new THREE.PerspectiveCamera(35,1,0.1,100000);
- scene.add(new THREE.HemisphereLight(0xffffff,0x554044,1.05));const light=new THREE.DirectionalLight(0xffffff,1.1);light.position.set(300,500,700);scene.add(light);
- const pivot=new THREE.Group();scene.add(pivot);const model=new THREE.Group();pivot.add(model);
- const baseMat=new THREE.MeshStandardMaterial({color:0xa95e58,roughness:.72,metalness:0.02,side:THREE.DoubleSide});
- const selectedMat=new THREE.MeshStandardMaterial({color:0x43d6c4,roughness:.55,emissive:0x123a35,side:THREE.DoubleSide});
- const meshes=[];
- const b64=atob(MUSCLE_DATA_GZ),compressed=new Uint8Array(b64.length);for(let i=0;i<b64.length;i++)compressed[i]=b64.charCodeAt(i);
- if(!('DecompressionStream' in window))throw new Error('Браузер не поддерживает распаковку модели. Откройте атлас в актуальном Chrome или Edge.');
- const raw=await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
- const Q=new Uint16Array(raw,0,M.nv*3),F=new Uint32Array(raw,M.nv*3*2,M.nf*3),mn=M.bounds.min,rg=M.bounds.rng;
- for(let i=0;i<items.length;i++){
-  const it=items[i],pos=new Float32Array(it.vn*3);for(let k=0;k<pos.length;k+=3){const q=(it.vo*3)+k;pos[k]=mn[0]+Q[q]/65535*rg[0];pos[k+1]=mn[1]+Q[q+1]/65535*rg[1];pos[k+2]=mn[2]+Q[q+2]/65535*rg[2]}
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setIndex(new THREE.BufferAttribute(F.subarray(it.fo*3,(it.fo+it.fn)*3),1));geo.computeVertexNormals();geo.computeBoundingBox();
-  const mesh=new THREE.Mesh(geo,baseMat);mesh.userData.index=i;model.add(mesh);meshes.push(mesh);
+const META=MUSCLE_META,ITEMS=META.items;
+const ORDER=['Голова и шея','Туловище','Верхняя конечность','Нижняя конечность','Таз и промежность'];
+const present=[...new Set(ITEMS.map(x=>x.g))];
+const GROUPS=['Все',...ORDER.filter(g=>present.includes(g)),...present.filter(g=>!ORDER.includes(g))];
+const GEN={'Голова и шея':'Head & neck','Туловище':'Trunk','Верхняя конечность':'Upper limb','Нижняя конечность':'Lower limb','Таз и промежность':'Pelvis & perineum'};
+const $=id=>document.getElementById(id);
+
+// ---------- распаковка модели ----------
+if(!('DecompressionStream' in window))throw new Error('Браузер не поддерживает распаковку модели. Откройте атлас в актуальном Chrome, Edge или Safari 16.4+.');
+const bin=atob(MUSCLE_DATA_GZ),zipped=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)zipped[i]=bin.charCodeAt(i);
+const raw=await new Response(new Blob([zipped]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+const NV=META.nv,NF=META.nf,QU=new Uint16Array(raw,0,NV*3),FI=new Uint32Array(raw,NV*3*2,NF*3),MN=META.bounds.min,RG=META.bounds.rng;
+
+// ---------- сцена (те же настройки, что у скелета) ----------
+const canvas=$('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x000000);
+const camera=new THREE.PerspectiveCamera(35,1,0.5,50000);
+scene.add(new THREE.HemisphereLight(0xffffff,0x44444c,0.95));
+const dl=new THREE.DirectionalLight(0xffffff,0.85);dl.position.set(300,600,800);scene.add(dl);
+const pivot=new THREE.Group(),skel=new THREE.Group();pivot.add(skel);scene.add(pivot);
+skel.rotation.x=-Math.PI/2;   // данные BodyParts3D: ось Z — «вверх»; ставим тело вертикально
+
+const matBase=new THREE.MeshStandardMaterial({color:0xb45f58,roughness:0.62,metalness:0,side:THREE.DoubleSide});
+const matSel=new THREE.MeshStandardMaterial({color:0x3ddc84,roughness:0.5,metalness:0,emissive:0x0b3d20,side:THREE.DoubleSide});
+const matIso=new THREE.MeshStandardMaterial({color:0xe39a92,roughness:0.5,metalness:0,emissive:0x1a0d0c,side:THREE.DoubleSide});
+const matDim=new THREE.MeshStandardMaterial({color:0xb45f58,roughness:0.7,metalness:0,transparent:true,opacity:0.14,depthWrite:false,side:THREE.DoubleSide});
+
+const meshes=[];
+for(let i=0;i<ITEMS.length;i++){
+ const it=ITEMS[i],pos=new Float32Array(it.vn*3);
+ for(let k=0;k<pos.length;k+=3){const q=it.vo*3+k;pos[k]=MN[0]+QU[q]/65535*RG[0];pos[k+1]=MN[1]+QU[q+1]/65535*RG[1];pos[k+2]=MN[2]+QU[q+2]/65535*RG[2]}
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+ g.setIndex(new THREE.BufferAttribute(FI.subarray(it.fo*3,(it.fo+it.fn)*3),1));
+ g.computeVertexNormals();g.computeBoundingBox();
+ const m=new THREE.Mesh(g,matBase);m.userData.i=i;skel.add(m);meshes[i]=m;
+}
+const lbox=new THREE.Box3();meshes.forEach(m=>lbox.union(m.geometry.boundingBox));
+const ctrL=lbox.getCenter(new THREE.Vector3()),sizeL=lbox.getSize(new THREE.Vector3());
+const R=Math.max(sizeL.x,sizeL.y,sizeL.z)*0.5;
+const DIST0=R/Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*1.05;
+
+// сетка: пол и задняя стена вращаются вместе с телом
+const gridG=new THREE.Group();skel.add(gridG);
+const gSize=Math.max(sizeL.x,sizeL.y)*1.8,gDiv=12;
+const gFloor=new THREE.GridHelper(gSize,gDiv,0x3ddc84,0x1f6b44);gFloor.rotation.x=Math.PI/2;gFloor.position.set(ctrL.x,ctrL.y,lbox.min.z);
+const gWall=new THREE.GridHelper(gSize,gDiv,0x3ddc84,0x1f6b44);gWall.position.set(ctrL.x,lbox.max.y,ctrL.z);
+[gFloor,gWall].forEach(g=>{g.material.transparent=true;g.material.opacity=0.28;g.material.depthWrite=false;gridG.add(g)});
+let gridOn=true;
+$('grid').onclick=e=>{gridOn=!gridOn;gridG.visible=gridOn;e.target.setAttribute('aria-pressed',gridOn)};
+
+let dist=DIST0,distT=DIST0;
+let tl=ctrL.clone(),tlT=ctrL.clone();
+pivot.rotation.order='YXZ';
+
+// ---------- состояние ----------
+let NM=0,sel=-1,iso=-1,grp='Все',spin=false,rotX=0.12,rotY=0,mode='rot',refSec=null,refQ='';
+const NMTXT=['RU','EN'];
+function sideOf(ru){const m=ru.match(/\((левая|правая)\)$/);return m?m[1]:''}
+function label(i){
+ const it=ITEMS[i];if(NM===0)return it.ru;
+ const s=sideOf(it.ru);const en=it.en.charAt(0).toUpperCase()+it.en.slice(1);
+ return en+(s?' ('+(s==='левая'?'left':'right')+')':'');
+}
+function gl(g){if(g==='Все')return NM===0?'Все мышцы':'All muscles';return NM===0?g:(GEN[g]||g)}
+
+// ---------- материалы и видимость ----------
+function applyAll(){
+ meshes.forEach((m,i)=>{
+  const inGrp=grp==='Все'||ITEMS[i].g===grp;
+  m.visible=iso>=0?i===iso:inGrp;
+  if(i===sel)m.material=iso>=0?matIso:matSel;
+  else m.material=(sel>=0&&iso<0)?matDim:matBase;
+  m.renderOrder=i===sel?2:0;
+ });
+ updateNote();
+}
+function updateNote(){
+ const el=$('note');
+ if(sel<0){el.innerHTML='<span class="hint">Нажмите на мышцу на модели или откройте «Справочник»</span>';return}
+ const it=ITEMS[sel];
+ el.innerHTML='<b></b><span style="color:#a2a5ae;font-size:.85rem"></span><button id="noteIso"></button>';
+ el.querySelector('b').textContent=label(sel);
+ el.querySelector('span').textContent=gl(it.g)+' · '+it.id;
+ const b=$('noteIso');b.textContent=iso>=0?'Показать все мышцы':'Показать изолированно';
+ b.onclick=()=>{if(iso>=0){iso=-1;applyAll()}else isolate(sel)};
+}
+function select(i){
+ sel=i;
+ if(i>=0){
+  const bb=meshes[i].geometry.boundingBox;
+  tlT.copy(bb.getCenter(new THREE.Vector3()));
+  distT=Math.min(DIST0*2.5,Math.max(bb.getSize(new THREE.Vector3()).length()*2.2,60));
+ }else iso=-1;
+ shownFor=-2;applyAll();
+}
+function isolate(i){iso=i;select(i)}
+function setGroup(g){
+ grp=g;iso=-1;
+ document.querySelectorAll('#grp button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.g===g));
+ $('toggleG').textContent=gl(g)+($('grpWrap').classList.contains('open')?' ▴':' ▾');
+ applyAll();
+}
+function resetView(){rotX=0.12;rotY=0;distT=DIST0;tlT.copy(ctrL);grp='Все';setGroup('Все');select(-1)}
+
+// ---------- верхняя панель ----------
+const gbox=$('grp');
+function buildGroups(){
+ gbox.innerHTML='';
+ GROUPS.forEach(g=>{const b=document.createElement('button');b.dataset.g=g;b.textContent=gl(g);b.setAttribute('aria-pressed',g===grp);b.onclick=()=>setGroup(g);gbox.appendChild(b)});
+ $('toggleG').textContent=gl(grp)+($('grpWrap').classList.contains('open')?' ▴':' ▾');
+}
+$('toggleG').onclick=e=>{const o=$('grpWrap').classList.toggle('open');e.currentTarget.setAttribute('aria-pressed',o);$('toggleG').textContent=gl(grp)+(o?' ▴':' ▾')};
+$('lang').onclick=e=>{NM=(NM+1)%2;e.target.textContent=NMTXT[NM];e.target.setAttribute('aria-pressed',NM>0);buildGroups();shownFor=-2;updateNote();if(!$('ref-ov').hidden)render_list()};
+$('spin').onclick=e=>{spin=!spin;e.target.setAttribute('aria-pressed',spin)};
+$('reset').onclick=resetView;
+$('home').onclick=()=>{location.href='index.html'};
+function setMode(m){mode=m;$('mRot').setAttribute('aria-pressed',m==='rot');$('mPan').setAttribute('aria-pressed',m==='pan')}
+$('mRot').onclick=()=>setMode('rot');$('mPan').onclick=()=>setMode('pan');
+
+// ---------- справочник ----------
+function render_list(){
+ const L=$('ref-list');L.innerHTML='';
+ const T=document.createElement('div');T.className='gh';T.style.cssText='font-size:1.1rem;color:#ececf0;text-transform:none;letter-spacing:0;margin:4px 6px 8px';
+ L.appendChild(T);
+ const S=document.createElement('input');S.id='msearch';S.type='search';S.autocomplete='off';S.placeholder=NM===0?'Поиск мышцы…':'Search muscle…';S.value=refQ;
+ S.addEventListener('input',()=>{refQ=S.value;const p=S.selectionStart;render_list();const n=$('msearch');n.focus();try{n.setSelectionRange(p,p)}catch(_){}});
+ L.appendChild(S);
+ const q=refQ.trim().toLowerCase();
+ const addItem=i=>{const b=document.createElement('button');b.className='it'+(i===sel?' on':'');b.textContent=label(i);b.onclick=()=>{closeRef();openChoice(i)};L.appendChild(b)};
+ if(q){
+  T.textContent=NM===0?'Результаты поиска':'Search results';
+  let n=0;ITEMS.forEach((it,i)=>{if(it.ru.toLowerCase().includes(q)||it.en.toLowerCase().includes(q)||it.id.toLowerCase().includes(q)){addItem(i);n++}});
+  if(!n){const e=document.createElement('div');e.className='hint';e.textContent=NM===0?'Ничего не найдено':'Nothing found';L.appendChild(e)}
+ }else if(refSec===null){
+  T.textContent=NM===0?'Справочник мышц':'Muscle reference';
+  GROUPS.slice(1).forEach(g=>{
+   const n=ITEMS.filter(x=>x.g===g).length;if(!n)return;
+   const b=document.createElement('button');b.className='it sec';
+   const s1=document.createElement('span');s1.textContent=gl(g);
+   const s2=document.createElement('span');s2.textContent=n;s2.style.color='#a2a5ae';
+   b.append(s1,s2);b.onclick=()=>{refSec=g;render_list();L.scrollTop=0};L.appendChild(b);
+  });
+ }else{
+  T.textContent=gl(refSec);
+  const back=document.createElement('button');back.className='it';back.textContent=NM===0?'← Все разделы':'← All sections';back.style.color='#fff';
+  back.onclick=()=>{refSec=null;render_list()};L.appendChild(back);
+  ITEMS.forEach((it,i)=>{if(it.g===refSec)addItem(i)});
  }
- const bounds=new THREE.Box3();meshes.forEach(m=>bounds.union(m.geometry.boundingBox));const center=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3());
- model.position.sub(center);const radius=Math.max(size.x,size.y,size.z)*.5;let distance=radius/Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*1.22,targetDistance=distance;
- let target=new THREE.Vector3(0,0,0),targetLook=target.clone();camera.position.set(0,0,distance);camera.lookAt(0,0,0);
- const grid=new THREE.GridHelper(Math.max(size.x,size.y)*1.7,16,0x286e62,0x163a35);grid.rotation.x=Math.PI/2;grid.position.set(0,0,bounds.min.z-center.z);grid.material.transparent=true;grid.material.opacity=.25;grid.material.depthWrite=false;scene.add(grid);
- let currentGroup=null,selected=-1,isolate=false,spinning=false,gridOn=true,rotX=.12,rotY=0,drag=null,points=new Map(),lastPinch=0;
- const list=document.getElementById('list'),search=document.getElementById('search'),info=document.getElementById('info'),status=document.getElementById('status');
- function updateInfo(i){if(i<0){info.innerHTML='<b>Выберите мышцу</b><span>Нажмите на название в списке или на 3D-модели</span>';return}const it=items[i];info.innerHTML='<b>'+it.ru+'</b><span>'+it.g+' · '+it.id+'</span>'}
- function apply(){meshes.forEach((m,i)=>{const inGroup=currentGroup===null||items[i].g===currentGroup;const inSearch=!search.value||items[i].ru.toLowerCase().includes(search.value.toLowerCase())||items[i].en.toLowerCase().includes(search.value.toLowerCase())||items[i].id.toLowerCase().includes(search.value.toLowerCase());m.visible=inGroup&&inSearch&&(!isolate||selected===i);m.material=i===selected?selectedMat:baseMat});renderList()}
- function renderList(){
-  list.innerHTML='';
-  const q=search.value.trim().toLowerCase();
-  if(!q && currentGroup===null){
-   const h=document.createElement('div');h.className='gh';h.textContent='Справочник мышц';h.style.cssText='font-size:1.05rem;color:#fff;padding:8px 9px 10px';list.appendChild(h);
-   groups.slice(1).forEach(g=>{const n=items.filter(x=>x.g===g).length;if(!n)return;const b=document.createElement('button');b.className='item sec';b.style.cssText='display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222';const a=document.createElement('span');a.textContent=g;const c=document.createElement('span');c.textContent=n+' ›';c.style.color='#999';b.append(a,c);b.onclick=()=>{currentGroup=g;renderList()};list.appendChild(b)});
-   status.textContent=items.length+' мышечных элементов · '+items.length+' 3D-моделей';return;
-  }
-  if(!q && currentGroup!==null){const back=document.createElement('button');back.className='item';back.textContent='← Все группы';back.style.color='#fff';back.onclick=()=>{currentGroup=null;renderList()};list.appendChild(back);const h=document.createElement('div');h.className='gh';h.textContent=currentGroup;h.style.cssText='font-size:1.02rem;color:#fff;padding:8px 9px';list.appendChild(h)}
-  let count=0;items.forEach((it,i)=>{if(!q&&currentGroup!==null&&it.g!==currentGroup)return;if(q&&!it.ru.toLowerCase().includes(q)&&!it.en.toLowerCase().includes(q)&&!it.id.toLowerCase().includes(q))return;count++;const b=document.createElement('button');b.className='item'+(i===selected?' active':'');b.textContent=it.ru;b.onclick=()=>select(i,true);list.appendChild(b)});
-  status.textContent=count+' мышц в списке · '+items.length+' 3D-моделей';
+}
+function openRef(){refSec=null;refQ='';render_list();$('ref-ov').hidden=false}
+function closeRef(){$('ref-ov').hidden=true}
+$('ref').onclick=openRef;$('ref-x').onclick=closeRef;
+function openChoice(i){
+ $('ch-t').textContent=label(i);
+ $('ch-m').onclick=()=>{closeChoice();iso=-1;select(i)};
+ $('ch-i').onclick=()=>{closeChoice();isolate(i)};
+ $('ch-c').onclick=closeChoice;
+ $('ch-ov').hidden=false;
+}
+function closeChoice(){$('ch-ov').hidden=true}
+
+// ---------- «?» ----------
+(function(){
+ const ov=$('about-ov'),bx=$('abox');
+ $('about').onclick=()=>{
+  bx.innerHTML='<b>Преподаватель</b>Темирбекова Н.М.'
+   +'<b>Составлено по конспектам</b>Ефименко И.Н.'
+   +'<b>Составитель атласа</b>Лавриненко В.Ю.'
+   +'<b>3D-модель</b>BodyParts3D, © The Database Center for Life Science. Лицензия CC BY-SA 2.1 Japan. dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html'
+   +'<button id="about-x">Закрыть</button>';
+  ov.hidden=false;$('about-x').onclick=()=>{ov.hidden=true};
+ };
+ ov.addEventListener('click',e=>{if(e.target===ov)ov.hidden=true});
+})();
+
+// ---------- управление: как в скелете ----------
+const pts=new Map();let lastD=0,lastM=null,down=null,lastTap=null;
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+function panBy(dx,dy){
+ const wpp=2*dist*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))/canvas.clientHeight;
+ const dv=new THREE.Vector3(dx*wpp,-dy*wpp,0);
+ const Q=new THREE.Quaternion().multiplyQuaternions(pivot.quaternion,skel.quaternion);
+ const d=dv.applyQuaternion(Q.invert()).multiplyScalar(-1);
+ tl.add(d);tlT.add(d);
+}
+canvas.addEventListener('pointerdown',e=>{
+ canvas.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pts.size===1)down={x:e.clientX,y:e.clientY,moved:0};
+ if(pts.size===2){const[a,b]=[...pts.values()];lastD=Math.hypot(a.x-b.x,a.y-b.y);lastM={x:(a.x+b.x)/2,y:(a.y+b.y)/2}}
+});
+canvas.addEventListener('pointermove',e=>{
+ if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+ const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
+ if(down)down.moved+=Math.abs(dx)+Math.abs(dy);
+ if(pts.size===1){
+  if(e.shiftKey||e.buttons===2||mode==='rot'){rotY+=dx*0.008;rotX=Math.max(-1.45,Math.min(1.45,rotX+dy*0.008))}
+  else panBy(dx,dy);
+ }else if(pts.size===2){
+  const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);
+  if(lastD>0)distT=dist=Math.max(10,Math.min(DIST0*2.5,dist*lastD/d));
+  const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+  if(lastM){rotY+=(mx-lastM.x)*0.008;rotX=Math.max(-1.45,Math.min(1.45,rotX+(my-lastM.y)*0.008))}
+  lastM={x:mx,y:my};lastD=d;
  }
- function select(i,focus){if(selected>=0&&meshes[selected])meshes[selected].material=baseMat;selected=i;isolate=false;document.getElementById('isolate').disabled=i<0;if(i>=0){meshes[i].material=selectedMat;const b=meshes[i].geometry.boundingBox;const c=b.getCenter(new THREE.Vector3()).add(model.position);if(focus){targetLook.copy(c);targetDistance=Math.max(b.getSize(new THREE.Vector3()).length()*2.7,40)} }apply();updateInfo(i)}
- search.addEventListener('input',()=>{currentGroup=null;selected=-1;isolate=false;document.getElementById('isolate').disabled=true;apply();updateInfo(-1)});
- document.getElementById('all').onclick=()=>{currentGroup=null;search.value='';isolate=false;selected=-1;document.getElementById('isolate').disabled=true;apply();updateInfo(-1)};
- document.getElementById('isolate').onclick=()=>{if(selected>=0){isolate=true;apply()}};
- document.getElementById('grid').onclick=e=>{gridOn=!gridOn;grid.visible=gridOn;e.target.setAttribute('aria-pressed',gridOn)};
- document.getElementById('spin').onclick=e=>{spinning=!spinning;e.target.setAttribute('aria-pressed',spinning)};
- document.getElementById('reset').onclick=()=>{rotX=.12;rotY=0;targetLook.set(0,0,0);targetDistance=distance;selected=-1;isolate=false;document.getElementById('isolate').disabled=true;apply();updateInfo(-1)};
- document.getElementById('home').onclick=()=>location.href='index.html';
- const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null;
- canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===1)down={x:e.clientX,y:e.clientY,moved:0,shift:e.shiftKey};if(points.size===2){const[a,b]=[...points.values()];lastPinch=Math.hypot(a.x-b.x,a.y-b.y)}});
- canvas.addEventListener('pointermove',e=>{if(!points.has(e.pointerId))return;const p=points.get(e.pointerId),dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;if(down)down.moved+=Math.abs(dx)+Math.abs(dy);if(points.size===1){rotY+=dx*.006;rotX=Math.max(-1.5,Math.min(1.5,rotX+dy*.006))}else if(points.size===2){const[a,b]=[...points.values()],d=Math.hypot(a.x-b.x,a.y-b.y);targetDistance=Math.max(radius*.35,Math.min(radius*8,targetDistance*(lastPinch/(d||1))));lastPinch=d}});
- function pointerUp(e){points.delete(e.pointerId);if(down&&points.size===0){if(down.moved<7){const r=canvas.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(meshes.filter(m=>m.visible),false);if(hits.length)select(hits[0].object.userData.index,true)}down=null}}
- canvas.addEventListener('pointerup',pointerUp);canvas.addEventListener('pointercancel',pointerUp);
- canvas.addEventListener('wheel',e=>{e.preventDefault();targetDistance=Math.max(radius*.35,Math.min(radius*8,targetDistance*(1+Math.sign(e.deltaY)*.12)))},{passive:false});
- function resize(){const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();
- function animate(){requestAnimationFrame(animate);if(spinning)rotY+=.002;pivot.rotation.order='YXZ';pivot.rotation.x+=(rotX-pivot.rotation.x)*.12;pivot.rotation.y+=(rotY-pivot.rotation.y)*.12;target.lerp(targetLook,.14);camera.position.set(target.x,target.y,target.z+distance);const d=camera.position.distanceTo(target);camera.position.set(target.x,target.y,target.z+targetDistance);camera.lookAt(target);renderer.render(scene,camera)}
- apply();updateInfo(-1);loading.style.display='none';animate();
-})().catch(e=>{console.error(e);document.getElementById('loading').textContent='Не удалось загрузить модель мышц: '+e.message});
+});
+const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+function pick(x,y){
+ const r=canvas.getBoundingClientRect();ndc.x=((x-r.left)/r.width)*2-1;ndc.y=-((y-r.top)/r.height)*2+1;
+ ray.setFromCamera(ndc,camera);
+ const hit=ray.intersectObjects(meshes.filter(m=>m.visible),false);
+ if(hit.length){const i=hit[0].object.userData.i;select(i===sel?-1:i)}
+}
+function endPtr(e){
+ if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);
+ if(pts.size===0&&down&&down.moved<6&&e.type==='pointerup'){
+  const now=performance.now();
+  if(lastTap&&now-lastTap.t<350&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<40){resetView();lastTap=null}
+  else{pick(e.clientX,e.clientY);lastTap={t:now,x:e.clientX,y:e.clientY}}
+ }
+ if(pts.size===0)down=null;
+ if(pts.size<2){lastD=0;lastM=null}
+}
+canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);
+canvas.addEventListener('wheel',e=>{e.preventDefault();distT=dist=Math.max(10,Math.min(DIST0*2.5,dist*(1+e.deltaY*0.001)))},{passive:false});
+
+// ---------- размер, выноска, цикл ----------
+let lastW=0,lastH=0;
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+const cl=$('cl'),ln=$('ln'),pt=$('pt'),callout=$('callout');let shownFor=-2;
+function updCallout(){
+ if(sel<0||!meshes[sel].visible){callout.style.display='none';return}
+ callout.style.display='block';
+ if(shownFor!==sel){cl.textContent=label(sel);shownFor=sel}
+ pivot.updateMatrixWorld(true);camera.updateMatrixWorld();
+ const c=meshes[sel].geometry.boundingBox.getCenter(new THREE.Vector3());
+ c.applyMatrix4(meshes[sel].matrixWorld);c.project(camera);
+ const w=canvas.clientWidth,h=canvas.clientHeight;
+ const x=(c.x+1)/2*w,y=(-c.y+1)/2*h,left=x>=w/2;
+ const bw=cl.offsetWidth,bh=cl.offsetHeight,bx=left?12:w-bw-12,by=Math.max(12,Math.min(h-bh-12,y-bh/2));
+ cl.style.left=bx+'px';cl.style.top=by+'px';
+ const ex=left?bx+bw:bx,ey=by+bh/2;
+ ln.setAttribute('x1',x);ln.setAttribute('y1',y);ln.setAttribute('x2',ex);ln.setAttribute('y2',ey);
+ pt.setAttribute('cx',x);pt.setAttribute('cy',y);
+}
+function setFsm(on){document.body.classList.toggle('fsm',on===true);requestAnimationFrame(()=>{lastW=0;resize()})}
+$('fs').addEventListener('click',()=>setFsm(true));$('fsx').addEventListener('click',()=>setFsm(false));
+
+function frame(){
+ requestAnimationFrame(frame);
+ if(canvas.clientWidth!==lastW||canvas.clientHeight!==lastH){lastW=canvas.clientWidth;lastH=canvas.clientHeight;resize()}
+ if(spin)rotY+=0.004;
+ tl.lerp(tlT,0.12);dist+=(distT-dist)*0.12;
+ skel.position.copy(tl.clone().applyEuler(skel.rotation).multiplyScalar(-1));
+ pivot.rotation.set(rotX,rotY,0);
+ camera.position.set(0,0,dist);camera.lookAt(0,0,0);
+ renderer.render(scene,camera);
+ try{updCallout()}catch(err){console.error('callout',err)}
+}
+buildGroups();applyAll();$('loading').style.display='none';frame();
+})().catch(e=>{console.error(e);const l=document.getElementById('loading');l.style.display='flex';l.textContent='Не удалось загрузить модель мышц: '+e.message});
 </script></body></html>
