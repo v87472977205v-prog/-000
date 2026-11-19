@@ -125,13 +125,13 @@ body.fsm #fs{display:none}
 </div></div>
 <script>(function(){
 /* Разделы меню. Чтобы добавить новый — допишите объект после запятой; soon:true делает кнопку неактивной. */
-var SECTIONS=[{id:'skeleton',title:'Скелет',desc:'3D-модель: вращайте, приближайте, нажимайте на кости'},{id:'muscles',title:'Мышцы',desc:'3D-модель мышечной системы человека'}];
+var SECTIONS=[{id:'skeleton',title:'Скелет',desc:'3D-модель: вращайте, приближайте, нажимайте на кости'},{id:'muscles',title:'Мышцы',desc:'3D-модель мышечной системы человека'},{id:'organs',title:'Органы',desc:'Сердце и почка: схемы в движении'}];
 var w=document.getElementById('welcome'),sp=document.getElementById('splash'),box=document.getElementById('secs');
 function closeMenu(){w.classList.add('out');setTimeout(function(){w.style.display='none'},700)}
 window.showMenu=function(){w.style.display='';w.classList.add('show');requestAnimationFrame(function(){w.classList.remove('out')})};
 SECTIONS.forEach(function(s){var b=document.createElement('button');b.type='button';b.className='sec'+(s.soon?' soon':'');b.disabled=!!s.soon;
  b.innerHTML='<span><b>'+s.title+'</b><em>'+(s.soon?'Скоро':s.desc)+'</em></span><i>›</i>';
- if(!s.soon)b.onclick=function(){if(s.id==='muscles'){location.href='muscles.html'}else{closeMenu()}};box.appendChild(b)});
+ if(!s.soon)b.onclick=function(){if(s.id==='muscles'){location.href='muscles.html'}else if(s.id==='organs'){location.href='organs.html'}else{closeMenu()}};box.appendChild(b)});
 var sk=sp.querySelector('svg.skull').cloneNode(true);sk.classList.add('static');w.querySelector('.wskull').appendChild(sk);
 /* страховка: если что-то не загрузилось, заставка всё равно уйдёт */
 setTimeout(function(){var s=document.getElementById('splash');if(s){s.classList.add('out');w.classList.add('show');setTimeout(function(){s.remove()},900)}},9000);

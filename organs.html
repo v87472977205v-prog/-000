@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Атлас анатомии — органы</title>
+<meta name="theme-color" content="#000000">
+<meta name="application-name" content="Атлас анатомии">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Атлас">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--bg:#000;--text:#ececf0;--fg:#ececf0;--mut:#8a8d97;--card:#000;--line:#2b2b2b;--ac:#3ddc84;
+--cortex:#7a4038;--med:#3f1b18;--blood:#e5484d;--urine:#e2b93b;--accent:#3ddc84}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:#ececf0;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#app{display:grid;grid-template-columns:1fr 320px;height:100%}
+#view{position:relative;min-width:0;overflow:hidden}
+#view::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:linear-gradient(rgba(61,220,132,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(61,220,132,.09) 1px,transparent 1px);
+ background-size:36px 36px;background-position:center;
+ -webkit-mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%)}
+#view.nogrid::before{display:none}
+.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px 16px 76px}
+.stage[hidden]{display:none}
+.stage svg{width:100%;height:100%;max-width:680px;display:block;overflow:visible}
+#kstage section{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:16px}
+#kstage section.on{display:flex}
+#kstage{padding:0}
+.cap{position:absolute;left:14px;right:14px;bottom:12px;pointer-events:none}
+.leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.75rem;color:#8a8d97}
+.sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+#cn{min-height:1.2em;margin-top:6px;font-size:.85rem;font-weight:600;color:#3ddc84}
+
+#panel{background:#000;border-left:1px solid #2b2b2b;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+#head{padding:12px 14px;border-bottom:1px solid #2b2b2b}
+h1{font-size:1.05rem;margin:0 0 10px}
+h2{font-size:.95rem;margin:0 0 6px;color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.row[hidden],.pp[hidden],.kb[hidden]{display:none}
+.row+.row{margin-top:6px}
+button{font:inherit;font-size:.85rem;padding:7px 10px;border-radius:8px;border:1px solid #555;background:#000;color:#fff;cursor:pointer}
+button:hover{border-color:#aaa}
+button[aria-pressed="true"],button[aria-selected="true"]{background:#fff;border-color:#fff;color:#000;font-weight:600}
+button:focus-visible{outline:2px solid #3ddc84;outline-offset:2px}
+.info{padding:12px 14px;border-bottom:1px solid #2b2b2b;min-height:92px;color:#a2a5ae;font-size:.88rem;line-height:1.45}
+.info b{display:block;color:#fff;font-size:1rem;margin-bottom:4px}
+.hint{color:#8a8d97;font-size:.82rem}
+.pad{padding:12px 14px;border-bottom:1px solid #2b2b2b}
+.btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.btns button{padding:9px 4px;font-size:.8rem;line-height:1.2}
+#pbar{display:flex;gap:4px;margin-top:12px}
+#pbar i{display:block;height:3px;background:#2b2b2b;border-radius:2px;overflow:hidden}
+#pbar i b{display:block;height:100%;width:0;background:#3ddc84}
+#pbar i:nth-child(1){flex:4}#pbar i:nth-child(2){flex:1}#pbar i:nth-child(3){flex:3}
+#ph{padding:12px 14px;border-bottom:1px solid #2b2b2b}
+#ph p{margin:0 0 10px;color:#a2a5ae;font-size:.88rem}
+.tm{color:#3ddc84;font-weight:600;font-size:.85rem;margin-left:4px}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:.85rem;color:#c9cad1}
+dt{display:flex;align-items:center;gap:8px}dd{margin:0;font-weight:600;text-align:right;color:#fff}
+.dot{width:8px;height:8px;border-radius:50%;background:#555;flex:none}
+.o .dot{background:#3ddc84}.c .dot{background:#e5484d}
+.steps{display:flex;gap:6px}
+.steps button{flex:1;padding:9px 0}
+.bar{height:3px;background:#2b2b2b;border-radius:2px;overflow:hidden;margin:8px 0 6px}
+.bar i{display:block;height:100%;background:#e2b93b;transition:width .6s}
+.foot,#foot{padding:10px 14px;font-size:.75rem;color:#8a8d97;border-top:1px solid #2b2b2b;margin-top:auto}
+
+/* схема сердца */
+[data-info]{cursor:pointer}
+[data-info]:hover{filter:brightness(1.18)}
+.hsel{filter:drop-shadow(0 0 4px #3ddc84)}
+.lb{font:12px system-ui,sans-serif;fill:#ececf0;stroke:#000;stroke-width:3px;paint-order:stroke}
+.cl{font:600 10.5px system-ui,sans-serif;fill:#fff;stroke:rgba(0,0,0,.6);stroke-width:2.5px;paint-order:stroke;text-anchor:middle}
+.vl{font:600 9px system-ui,sans-serif;fill:#fff;stroke:rgba(0,0,0,.6);stroke-width:2.2px;paint-order:stroke;text-anchor:middle}
+.fl{fill:none;stroke:#fff;stroke-width:3.5;stroke-dasharray:3 9;stroke-linecap:round;opacity:0;transition:opacity .35s;animation:dash .7s linear infinite;marker-end:url(#ar);filter:drop-shadow(0 0 1px rgba(0,0,0,.8));pointer-events:none}
+.fl.on{opacity:1}
+.lf{stroke:#e8e8e8;stroke-width:4;stroke-linecap:round;fill:none;pointer-events:none}
+.ch{stroke:#bdbdbd;stroke-width:1.2;fill:none;opacity:.85;pointer-events:none}
+#dot{pointer-events:none}
+@keyframes dash{to{stroke-dashoffset:-12}}
+/* схема почки */
+.part{cursor:pointer;transition:opacity .2s}.part:hover{opacity:.8}.sel{stroke:#3ddc84!important;stroke-width:3!important}
+.flow{stroke-dasharray:6 8;animation:f 1s linear infinite}
+@keyframes f{to{stroke-dashoffset:-14}}
+@media (prefers-reduced-motion:reduce){.fl,.flow{animation:none}.bar i{transition:none}}
+@media (max-width:760px){
+ #app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46vh)}
+ #panel{border-left:0;border-top:1px solid #2b2b2b}
+ .stage{padding:10px 18px 84px}
+}
+</style></head><body>
+<div id="app">
+ <div id="view">
+  <div class="stage" id="heartStage">
+   <svg id="s" preserveAspectRatio="xMidYMid meet" viewBox="0 0 460 472" role="img" aria-label="Модель сердца в разрезе">
+<defs><marker id="ar" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" viewBox="0 0 10 10" refX="7" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#fff" stroke="#222" stroke-width="1"/></marker></defs>
+<g id="v1"></g><g id="v2"></g>
+
+<ellipse cx="115" cy="192" rx="56" ry="46" fill="#2a1d1b" stroke="#a58680" stroke-width="3"/>
+<ellipse cx="290" cy="192" rx="54" ry="46" fill="#2a1d1b" stroke="#a58680" stroke-width="3"/>
+<ellipse id="ra" data-info="ra" cx="115" cy="196" rx="44" ry="34" fill="#3b74e8"/>
+<ellipse id="la" data-info="la" cx="290" cy="196" rx="42" ry="34" fill="#e5484d"/>
+<path id="mass" d="M70 238C52 330 128 430 208 454C300 442 352 340 340 238Z" fill="#2a1d1b" stroke="#a58680" stroke-width="3"/>
+<g id="rv"><path data-info="rv" d="M96 246C90 322 130 386 192 420C197 360 197 300 191 246Z" fill="#3b74e8"/><ellipse cx="128" cy="338" rx="8" ry="13" fill="#2a1d1b"/><ellipse cx="176" cy="332" rx="7" ry="13" fill="#2a1d1b"/></g>
+<g id="lv"><path data-info="lv" d="M214 246C214 312 222 372 234 420C294 406 332 340 324 246Z" fill="#e5484d"/><ellipse cx="240" cy="334" rx="8" ry="13" fill="#2a1d1b"/><ellipse cx="303" cy="332" rx="8" ry="13" fill="#2a1d1b"/></g>
+<rect x="96" y="216" width="56" height="32" fill="#3b74e8"/><rect x="262" y="216" width="56" height="32" fill="#e5484d"/>
+<rect x="166" y="222" width="30" height="26" fill="#3b74e8"/><rect x="207" y="222" width="30" height="26" fill="#e5484d"/>
+<g id="chs"></g><g id="lfs"></g>
+<text class="vl" x="124" y="228">трёхстворч.</text><text class="vl" x="290" y="228">митральный</text>
+
+<g id="fls">
+<path class="fl" data-on="dia ven" d="M62 46L62 160L78 190"/>
+<path class="fl" data-on="dia ven" d="M30 400L30 218L58 206L80 198"/>
+<path class="fl" data-on="dia atr" d="M124 190L124 304"/>
+<path class="fl" data-on="ven" d="M150 330C165 300 181 280 181 240L181 130"/>
+<path class="fl" data-on="ven" d="M181 118L140 92"/>
+<path class="fl" data-on="ven" d="M245 110L332 107"/>
+<path class="fl" data-on="dia ven" d="M412 146L342 160"/>
+<path class="fl" data-on="dia ven" d="M412 174L342 182"/>
+<path class="fl" data-on="dia ven" d="M412 206L342 200"/>
+<path class="fl" data-on="dia ven" d="M412 234L342 218"/>
+<path class="fl" data-on="dia atr" d="M290 200L290 304"/>
+<path class="fl" data-on="ven" d="M262 330C236 300 223 282 223 240L223 100Q223 56 250 56L326 56"/>
+</g>
+
+<text class="lb" x="82" y="40">Верхняя полая вена</text>
+<text class="lb" x="6" y="466">Нижняя полая вена</text>
+<text class="lb" x="160" y="136" text-anchor="end">Лёгочный ствол</text>
+<text class="lb" x="246" y="92">Дуга аорты</text>
+<text class="lb" x="252" y="14">ветви дуги</text>
+<text class="lb" x="344" y="62">к органам тела</text>
+<text class="lb" x="344" y="122">к лёгким</text>
+<text class="lb" x="126" y="82" text-anchor="end">к лёгким</text>
+<text class="lb" x="352" y="268">Лёгочные вены (4)</text>
+<text class="cl" x="100" y="186">Правое</text><text class="cl" x="100" y="199">предсердие</text>
+<text class="cl" x="270" y="186">Левое</text><text class="cl" x="270" y="199">предсердие</text>
+<text class="cl" x="156" y="360">Правый</text><text class="cl" x="156" y="373">желудочек</text>
+<text class="cl" x="268" y="360">Левый</text><text class="cl" x="268" y="373">желудочек</text>
+
+<circle id="dot" r="6" fill="#3ddc84" stroke="#000" stroke-width="2" opacity="0"/>
+<g id="segs"></g>
+</svg>
+   <div class="cap">
+    <div class="leg"><span><i class="sw" style="background:#3b74e8"></i>венозная кровь</span><span><i class="sw" style="background:#e5484d"></i>артериальная кровь</span><span><i class="sw" style="background:#2a1d1b;box-shadow:0 0 0 1px #a58680"></i>миокард</span><span><i class="sw" style="background:#e8e8e8"></i>клапаны</span></div>
+    <div id="cn"></div>
+   </div>
+  </div>
+  <div class="stage" id="kidneyStage" hidden><div id="kstage" style="position:absolute;inset:0">
+   <section id="system"><svg id="svgS" viewBox="0 0 300 340" role="img" aria-label="Мочевая система"></svg></section>
+   <section id="kidney"><svg id="svgK" viewBox="0 0 430 320" role="img" aria-label="Разрез почки"></svg></section>
+   <section id="nephron"><svg id="svgN" viewBox="0 0 360 380" role="img" aria-label="Нефрон"></svg></section>
+  </div></div>
+ </div>
+ <aside id="panel">
+  <div id="head">
+   <h1>Атлас органов</h1>
+   <div class="row" id="organs"><button data-o="heart" aria-pressed="true">Сердце</button><button data-o="kidney" aria-pressed="false">Почка</button></div>
+   <div class="row" id="ktabs" hidden><button data-t="system">Система</button><button data-t="kidney">Разрез</button><button data-t="nephron">Нефрон</button></div>
+   <div class="row"><button id="grid" aria-pressed="true">Сетка</button><button id="home">☰ Меню</button></div>
+  </div>
+
+  <div class="pp" id="hp">
+   <div class="info" id="inf"><span class="hint">Нажмите на камеру или сосуд на схеме. Вид спереди, в разрезе.</span></div>
+   <div class="pad">
+    <div class="btns" role="group" aria-label="Фаза сердечного цикла">
+     <button data-i="0">Диастола</button><button data-i="1">Систола предсердий</button><button data-i="2">Систола желудочков</button>
+    </div>
+    <div class="row"><button id="au" aria-pressed="true">Автоцикл</button><button id="circ" aria-pressed="false">Путь крови</button></div>
+    <div id="pbar" aria-hidden="true"><i><b></b></i><i><b></b></i><i><b></b></i></div>
+   </div>
+   <div id="ph"><h2 id="t"></h2><p id="d"></p>
+    <dl><dt id="r1"><i class="dot"></i>Трёхстворчатый клапан</dt><dd id="a1"></dd>
+    <dt id="r2"><i class="dot"></i>Митральный клапан</dt><dd id="a2"></dd>
+    <dt id="r3"><i class="dot"></i>Клапан лёгочного ствола</dt><dd id="a3"></dd>
+    <dt id="r4"><i class="dot"></i>Аортальный клапан</dt><dd id="a4"></dd>
+    <dt>Предсердия</dt><dd id="ca"></dd><dt>Желудочки</dt><dd id="cv"></dd></dl></div>
+   <div class="foot">Схема упрощённая. При 75 ударах в минуту цикл длится около 0,8 с; в анимации время растянуто.</div>
+  </div>
+
+  <div class="pp" id="kp" hidden>
+   <div class="kb" data-for="system"><div class="info" id="infoS"><b>Мочевая система</b>Выделительная функция: образование и выведение мочи. Нажмите на орган.</div></div>
+   <div class="kb" data-for="kidney" hidden><div class="info" id="infoK"><b>Разрез почки</b>Нажмите на слой или часть почки.</div></div>
+   <div class="kb" data-for="nephron" hidden>
+    <div class="pad"><div class="steps" id="steps"></div><div class="hint" style="margin-top:8px">Жёлтое — моча, зелёное — возвращается в кровь, красное — кровь.</div></div>
+    <div class="info" id="infoN"></div>
+    <div class="pad" style="border-bottom:0"><b id="vol" style="color:#fff;font-size:.9rem"></b><div class="bar"><i id="barI"></i></div><span class="hint">Объём мочи за сутки</span></div>
+   </div>
+   <div class="foot">По конспекту: мочевая система, строение почки, нефрон.</div>
+  </div>
+ </aside>
+</div>
+<script>
+(function(){
+var HEART_JS=(function(){
+
+const $=i=>document.getElementById(i),NS='http://www.w3.org/2000/svg';
+const B='#3b74e8',R='#e5484d';
+
+const I={
+ra:{t:'Правое предсердие',x:'Принимает венозную кровь из верхней и нижней полых вен. Давление около 2–6 мм рт. ст.'},
+la:{t:'Левое предсердие',x:'Принимает артериальную кровь из четырёх лёгочных вен. Давление около 6–12 мм рт. ст.'},
+rv:{t:'Правый желудочек',x:'Выбрасывает венозную кровь в лёгочный ствол. Стенка тоньше, чем у левого; давление около 25/5 мм рт. ст.'},
+lv:{t:'Левый желудочек',x:'Самая толстая стенка сердца. Выбрасывает артериальную кровь в аорту; давление около 120/8 мм рт. ст.'},
+svc:{t:'Верхняя полая вена',x:'Несёт венозную кровь от головы и рук в правое предсердие.'},
+ivc:{t:'Нижняя полая вена',x:'Несёт венозную кровь от нижней части тела в правое предсердие.'},
+pt:{t:'Лёгочный ствол и его ветви',x:'Несут венозную кровь от правого желудочка к лёгким (малый круг).'},
+pv:{t:'Лёгочные вены (4)',x:'Несут артериальную кровь из лёгких в левое предсердие. Их четыре: по две из каждого лёгкого.'},
+ao:{t:'Аорта',x:'Несёт артериальную кровь ко всем органам тела (большой круг). Давление около 120/80 мм рт. ст.'}
+};
+
+const P=[
+{k:'dia',n:'Общая диастола',s:'0,4 с',t:2.8,a:0,c:0,av:1,sl:0,x:'Все отделы расслаблены. Створчатые клапаны открыты, полулунные закрыты. Кровь из полых и лёгочных вен наполняет предсердия и стекает в желудочки.'},
+{k:'atr',n:'Систола предсердий',s:'0,1 с',t:1.4,a:1,c:0,av:1,sl:0,x:'Предсердия сокращаются и досылают оставшуюся кровь в желудочки. Створчатые клапаны открыты, полулунные закрыты.'},
+{k:'ven',n:'Систола желудочков',s:'0,3 с',t:2.6,a:0,c:1,av:0,sl:1,x:'Желудочки сокращаются, стенки утолщаются. Створчатые клапаны захлопываются, полулунные открываются: кровь выбрасывается в аорту (большой круг) и лёгочный ствол (малый круг).'}];
+
+function vs(el,list){let o='',f='';for(const[d,w,c,k]of list){const a=k?` data-info="${k}"`:'';o+=`<path d="${d}" stroke="#000" stroke-width="${w+4}" fill="none" stroke-linejoin="round"${a}/>`;f+=`<path d="${d}" stroke="${c}" stroke-width="${w}" fill="none" stroke-linejoin="round"${a}/>`}$(el).innerHTML=o+f}
+vs('v1',[
+['M62 36L62 182',24,B,'svc'],
+['M30 410L30 216L64 204',22,B,'ivc'],
+['M181 244L181 112',30,B,'pt'],
+['M181 112L134 86',18,B,'pt'],
+['M181 112L338 106',18,B,'pt'],
+['M416 146L342 160',14,R,'pv'],
+['M416 174L342 182',14,R,'pv'],
+['M416 206L342 200',14,R,'pv'],
+['M416 234L342 218',14,R,'pv']
+]);
+vs('v2',[['M223 246L223 80Q223 56 250 56L330 56',30,R,'ao'],['M262 56L262 24',9,R,'ao'],['M290 56L290 24',9,R,'ao'],['M318 56L318 24',9,R,'ao']]);
+
+const lf=[...Array(8)].map(()=>{const e=document.createElementNS(NS,'path');e.setAttribute('class','lf');$('lfs').appendChild(e);return e});
+const ch=[...Array(4)].map(()=>{const e=document.createElementNS(NS,'path');e.setAttribute('class','ch');$('chs').appendChild(e);return e});
+
+/* путь крови: сегменты и подписи */
+const SEG=[
+'M62 36L62 182L100 196','M120 200L128 262L146 330','M146 330L178 250L181 112L134 86','M134 86L70 96',
+'M416 160L342 180L300 200','M292 226L282 292L268 340','M262 330L223 246L223 80Q223 56 250 56L330 56',
+'M330 56L380 90','M30 410L30 216L64 204'];
+const SEGN=['Верхняя полая вена → правое предсердие','Правое предсердие → правый желудочек','Правый желудочек → лёгочный ствол','Малый круг: кровь проходит через лёгкие','Лёгочные вены → левое предсердие','Левое предсердие → левый желудочек','Левый желудочек → аорта','Большой круг: кровь к органам тела','Нижняя полая вена → правое предсердие'];
+const segEls=SEG.map(d=>{const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke','none');$('segs').appendChild(p);return p});
+const segLen=segEls.map(p=>p.getTotalLength());
+let cs=0,cp=0;
+
+const L=(a,b,k)=>a+(b-a)*k,sc=(cx,cy,k)=>`translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})`,tp=(cx,cy,k,x,y)=>[cx+(x-cx)*k,cy+(y-cy)*k];
+let s={a:0,c:0,av:1,sl:0},tg=P[0],idx=0,tm=0,auto=true,circ=false,last=performance.now();
+
+function av(x1,x2,k,pap,cx,cy,ck,i){const m=(x1+x2)/2,e=[[L(m-2,x1+5,k),L(234,278,k)],[L(m+2,x2-5,k),L(234,278,k)]];
+ lf[i].setAttribute('d',`M${x1} 240L${e[0]}`);lf[i+1].setAttribute('d',`M${x2} 240L${e[1]}`);
+ const q0=tp(cx,cy,ck,...pap[0]),q1=tp(cx,cy,ck,...pap[1]);
+ ch[i/4*2].setAttribute('d',`M${e[0]}L${q0}`);ch[i/4*2+1].setAttribute('d',`M${e[1]}L${q1}`)}
+function sl(x1,x2,k,i){const m=(x1+x2)/2;
+ lf[i].setAttribute('d',`M${x1} 232L${L(m-1,x1+3,k)} ${L(246,214,k)}`);lf[i+1].setAttribute('d',`M${x2} 232L${L(m+1,x2-3,k)} ${L(246,214,k)}`)}
+const pf=document.querySelectorAll('#pbar b');
+function pbar(){pf.forEach((b,i)=>{b.style.width=(i<idx?100:i>idx?0:(auto?Math.min(1,tm/tg.t)*100:100))+'%'})}
+function render(){pbar();const ck=1-.4*s.c;
+ $('rv').setAttribute('transform',sc(144,335,ck));$('lv').setAttribute('transform',sc(270,335,ck));
+ $('ra').setAttribute('transform',sc(115,196,1-.38*s.a));$('la').setAttribute('transform',sc(290,196,1-.38*s.a));
+ $('mass').setAttribute('transform',sc(204,345,1-.05*s.c));
+ av(96,152,s.av,[[128,326],[176,320]],144,335,ck,0);av(262,318,s.av,[[240,322],[303,320]],270,335,ck,4);
+ sl(166,196,s.sl,2);sl(207,237,s.sl,6)}
+
+function setP(i){idx=i;tg=P[i];tm=0;$('t').innerHTML=`${tg.n} <span class="tm">${tg.s}</span>`;
+ $('d').textContent=tg.x;
+ const o=tg.av,q=tg.sl,m=(id,v)=>{$('r'+id).className=v?'o':'c';$('a'+id).textContent=v?'открыт':'закрыт'};
+ m(1,o);m(2,o);m(3,q);m(4,q);
+ $('ca').textContent=tg.a?'сокращаются':'расслаблены';$('cv').textContent=tg.c?'сокращаются':'расслаблены';
+ document.querySelectorAll('.fl').forEach(e=>e.classList.toggle('on',e.dataset.on.split(' ').includes(tg.k)));
+ document.querySelectorAll('[data-i]').forEach(b=>b.setAttribute('aria-pressed',!auto&&+b.dataset.i===i))}
+
+document.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{auto=false;$('au').setAttribute('aria-pressed',false);setP(+b.dataset.i)});
+$('au').onclick=()=>{auto=!auto;$('au').setAttribute('aria-pressed',auto);setP(idx)};
+$('circ').onclick=()=>{circ=!circ;$('circ').setAttribute('aria-pressed',circ);if(!circ){$('cn').textContent='';$('dot').setAttribute('opacity',0)}};
+$('s').addEventListener('click',e=>{const el=e.target.closest('[data-info]');if(!el)return;const d=I[el.dataset.info];document.querySelectorAll('.hsel').forEach(n=>n.classList.remove('hsel'));document.querySelectorAll('[data-info="'+el.dataset.info+'"]').forEach(n=>n.classList.add('hsel'));
+ $('inf').innerHTML='';const b=document.createElement('b');b.textContent=d.t;const p=document.createElement('p');p.style.margin='4px 0 0';p.textContent=d.x;$('inf').append(b,p)});
+
+function loop(n){if(!window.__heartOn){last=n;requestAnimationFrame(loop);return}const dt=Math.min(.1,(n-last)/1e3);last=n;
+ if(auto){tm+=dt;if(tm>=tg.t)setP((idx+1)%3)}
+ if(circ){cp+=dt*150;if(cp>=segLen[cs]){cs=(cs+1)%SEG.length;cp=0;$('cn').textContent=SEGN[cs]}
+  if(!$('cn').textContent)$('cn').textContent=SEGN[cs];
+  const q=segEls[cs].getPointAtLength(cp);$('dot').setAttribute('cx',q.x);$('dot').setAttribute('cy',q.y);$('dot').setAttribute('opacity',1)}
+ const k=1-Math.exp(-dt*3),kv=1-Math.exp(-dt*9);
+ s.a+=(tg.a-s.a)*k;s.c+=(tg.c-s.c)*k;s.av+=(tg.av-s.av)*kv;s.sl+=(tg.sl-s.sl)*kv;render();requestAnimationFrame(loop)}
+setP(0);requestAnimationFrame(loop);
+
+});
+var KIDNEY_JS=(function(){
+
+var NS="http://www.w3.org/2000/svg";
+function el(p,t,a,txt){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(txt)e.textContent=txt;p.appendChild(e);return e}
+function bind(svg,infoEl,data){svg.querySelectorAll('.part').forEach(function(n){n.addEventListener('click',function(){svg.querySelectorAll('.sel').forEach(function(s){s.classList.remove('sel')});n.classList.add('sel');var d=data[n.dataset.id];infoEl.innerHTML='<b>'+d[0]+'</b>'+d[1]})})}
+
+/* ---------- Система ---------- */
+var S=document.getElementById('svgS');
+var dS={
+rk:["Правая почка (ren dexter)","Лежит забрюшинно, чуть ниже левой. Здесь образуется моча. Масса около 150 г."],
+lk:["Левая почка (ren sinister)","Лежит забрюшинно, выше правой. Кроме мочи вырабатывает ренин — вещество, которое регулирует артериальное давление."],
+ur:["Мочеточники (2)","По ним моча из почек идёт в мочевой пузырь."],
+bl:["Мочевой пузырь","Резервуар для мочи."],
+uu:["Мочеиспускательный канал","Через него моча периодически выводится наружу."]};
+function ell(id,cx,cy,rx,ry){el(S,'ellipse',{cx:cx,cy:cy,rx:rx,ry:ry,fill:'var(--cortex)',stroke:'var(--med)','stroke-width':2,class:'part','data-id':id})}
+['M105 105 C105 170 140 190 148 215','M195 90 C195 160 165 190 152 215'].forEach(function(d){
+el(S,'path',{d:d,fill:'none',stroke:'var(--urine)','stroke-width':4,class:'part','data-id':'ur'});
+el(S,'path',{d:d,fill:'none',stroke:'var(--fg)','stroke-width':1.5,class:'flow','pointer-events':'none'})});
+ell('rk',100,75,24,42);ell('lk',200,60,24,42);
+el(S,'circle',{cx:150,cy:245,r:32,fill:'var(--urine)',stroke:'var(--med)','stroke-width':2,class:'part','data-id':'bl',opacity:.85});
+el(S,'path',{d:'M150 277 L150 330',stroke:'var(--urine)','stroke-width':6,class:'part','data-id':'uu',fill:'none'});
+el(S,'path',{d:'M150 277 L150 330',stroke:'var(--fg)','stroke-width':1.5,class:'flow','pointer-events':'none',fill:'none'});
+el(S,'text',{x:30,y:80,fill:'var(--mut)','font-size':12},'правая');
+el(S,'text',{x:238,y:65,fill:'var(--mut)','font-size':12},'левая');
+bind(S,document.getElementById('infoS'),dS);
+
+/* ---------- Почка ---------- */
+var K=document.getElementById('svgK');
+var dK={
+cap:["Фиброзная капсула","Покрывает почку, состоит из соединительной ткани. Вокруг неё — жировая капсула."],
+cor:["Корковое вещество (наружное, светлое)","Паренхима почки состоит из двух слоёв. Корковое вещество заходит в мозговое в виде столбов."],
+med:["Мозговое вещество — пирамиды","Внутренний слой. Верхушки 2–3 пирамид соединяются и образуют сосочек."],
+pap:["Почечный сосочек","Выступ в малую чашку. Через него моча попадает в чашку."],
+cal:["Малые чашки (8–12)","Принимают мочу из сосочков. Большие чашки (2–3) образуются слиянием малых."],
+fat:["Жировая капсула","Окружает почку снаружи, поверх фиброзной капсулы, и удерживает её на месте."],art:["Почечная артерия","Входит в ворота почки и несёт кровь, которую нужно очистить. Именно она разветвляется до артериол нефронов."],vei:["Почечная вена","Выходит через ворота и уносит очищенную кровь."],pel:["Лоханка и мочеточник","Большие чашки сливаются в лоханку, а потом в мочеточник. Всё это лежит в почечной пазухе, которая продолжает ворота почки."]};
+var c={x:120,y:160};
+var BP='M170 18 C250 18 292 80 292 160 C292 245 245 302 170 302 C120 302 92 275 100 240 C106 215 96 200 80 192 L80 128 C96 120 106 105 100 80 C92 45 120 18 170 18Z';
+el(K,'path',{d:BP,transform:'translate(-11.4 -9.6) scale(1.06)',fill:'var(--urine)',opacity:.35,stroke:'var(--urine)','stroke-width':2,class:'part','data-id':'fat'});
+el(K,'path',{d:BP,fill:'var(--cortex)',stroke:'var(--fg)','stroke-width':3,class:'part','data-id':'cor'});
+el(K,'path',{d:BP,fill:'none',stroke:'var(--fg)','stroke-width':1.5,'stroke-dasharray':'2 3',class:'part','data-id':'cap'});
+[-70,-35,0,35,70].forEach(function(a){var r=a*Math.PI/180,u=[Math.cos(r),Math.sin(r)],v=[-u[1],u[0]];
+var ap=[c.x+38*u[0],c.y+38*u[1]],bm=[c.x+112*u[0],c.y+112*u[1]];
+var p=[ap,[bm[0]+26*v[0],bm[1]+26*v[1]],[bm[0]-26*v[0],bm[1]-26*v[1]]];
+el(K,'polygon',{points:p.map(function(q){return q.join(',')}).join(' '),fill:'var(--med)',class:'part','data-id':'med'});
+var cp=[c.x+28*u[0],c.y+28*u[1]];
+el(K,'circle',{cx:cp[0],cy:cp[1],r:10,fill:'var(--urine)',opacity:.9,class:'part','data-id':'cal'});
+el(K,'circle',{cx:ap[0],cy:ap[1],r:4,fill:'var(--bg)',class:'part','data-id':'pap'});
+el(K,'line',{x1:cp[0],y1:cp[1],x2:c.x-10,y2:c.y,stroke:'var(--urine)','stroke-width':3,'pointer-events':'none'})});
+el(K,'circle',{cx:c.x-12,cy:c.y,r:11,fill:'var(--urine)',stroke:'var(--med)','stroke-width':2,class:'part','data-id':'pel'});
+el(K,'path',{d:'M108 165 C80 200 70 250 80 310',fill:'none',stroke:'var(--urine)','stroke-width':7,class:'part','data-id':'pel'});
+el(K,'path',{d:'M10 100 C50 104 80 130 112 150',fill:'none',stroke:'var(--blood)','stroke-width':6,'stroke-linecap':'round',class:'part','data-id':'art'});
+el(K,'path',{d:'M10 122 C50 126 78 150 108 160',fill:'none',stroke:'#2f6fb5','stroke-width':6,'stroke-linecap':'round',class:'part','data-id':'vei'});
+[[4,92,'артерия','var(--blood)'],[4,142,'вена','#2f6fb5'],[4,176,'ворота','var(--mut)'],[4,300,'мочеточник','var(--mut)'],[4,215,'лоханка','var(--fg)']].forEach(function(l){el(K,'text',{x:l[0],y:l[1],fill:l[3],'font-size':14,'pointer-events':'none'},l[2])});
+el(K,'line',{x1:58,y1:210,x2:104,y2:168,stroke:'var(--fg)','stroke-width':1});
+[['капсула',259,263,300],['кора',252,72,60],['почечный столб',210,126,100],['пирамида',195,160,140],['сосочек',158,160,180],['малая чашка',143,176,220]].forEach(function(l){
+var a={x1:302,y1:l[3]-4,x2:l[1],y2:l[2],'pointer-events':'none'};
+el(K,'line',Object.assign({stroke:'#000','stroke-width':3,opacity:.8},a));
+el(K,'line',Object.assign({stroke:'var(--fg)','stroke-width':1},a));
+el(K,'circle',{cx:l[1],cy:l[2],r:3,fill:'var(--fg)',stroke:'#fff','pointer-events':'none'});
+el(K,'text',{x:306,y:l[3],fill:'var(--fg)','font-size':14,'pointer-events':'none'},l[0])});
+bind(K,document.getElementById('infoK'),dK);
+
+/* ---------- Нефрон ---------- */
+
+var N=document.getElementById('svgN');
+var C=['#f59e0b','#10b981','#3b82f6','#a855f7','#ec4899'];
+var D={2:'M70 100 C45 108 45 116 70 124 C95 132 95 140 70 148 C45 156 45 164 70 172 L70 190',3:'M70 190 L70 330 Q100 372 130 330 L130 200',4:'M130 200 C120 172 160 180 170 156 C180 132 210 148 222 126 L264 126',5:'M270 40 L270 350'};
+el(N,'rect',{x:0,y:0,width:360,height:190,fill:'var(--cortex)',opacity:.28});
+el(N,'rect',{x:0,y:190,width:360,height:190,fill:'var(--med)',opacity:.28});
+el(N,'text',{x:352,y:16,'text-anchor':'end',fill:'var(--mut)','font-size':12},'кора');
+el(N,'text',{x:352,y:208,'text-anchor':'end',fill:'var(--mut)','font-size':12},'мозговое вещество');
+['M0 50 L42 62','M98 72 C104 76 104 92 104 112 L104 335','M104 205 C140 235 200 200 232 152'].forEach(function(d){el(N,'path',{d:d,fill:'none',stroke:'var(--blood)','stroke-width':3,'stroke-linecap':'round'})});
+var seg=[];
+seg[1]=el(N,'circle',{cx:70,cy:70,r:30,fill:'var(--card)',stroke:C[0],'stroke-width':5,class:'part'});
+el(N,'path',{d:'M52 66 C60 48 80 56 72 70 C64 84 84 90 90 74',fill:'none',stroke:'var(--blood)','stroke-width':3,'pointer-events':'none'});
+for(var i=2;i<=5;i++){seg[i]=el(N,'path',{d:D[i],fill:'none',stroke:C[i-1],'stroke-width':i==5?11:9,'stroke-linecap':'round','stroke-linejoin':'round',class:'part'});el(N,'path',{d:D[i],fill:'none',stroke:'var(--card)','stroke-width':3,opacity:.85,'pointer-events':'none'})}
+(function(){for(var k=1;k<=5;k++)(function(j){seg[j].onclick=function(){setStep(j-1)}})(k)})();
+el(N,'polygon',{points:'261,348 279,348 270,362',fill:C[4]});
+el(N,'text',{x:270,y:377,'text-anchor':'middle',fill:'var(--mut)','font-size':11},'к сосочку');
+el(N,'text',{x:2,y:42,fill:'var(--blood)','font-size':11},'артериола');
+el(N,'text',{x:146,y:300,fill:'var(--blood)','font-size':11},'капилляры');
+el(N,'line',{x1:144,y1:297,x2:108,y2:297,stroke:'var(--blood)'});
+var flow=el(N,'path',{d:'',fill:'none',stroke:'var(--fg)','stroke-width':2,class:'flow','pointer-events':'none'});
+var G=el(N,'g',{});
+[[1,70,18],[2,28,148],[3,100,366],[4,206,172],[5,298,200]].forEach(function(b){var g=el(N,'g',{class:'part'});el(g,'circle',{cx:b[1],cy:b[2],r:11,fill:C[b[0]-1]});el(g,'text',{x:b[1],y:b[2]+4,'text-anchor':'middle',fill:'#fff','font-size':12,'font-weight':'bold','pointer-events':'none'},''+b[0]);g.onclick=function(){setStep(b[0]-1)}});
+var Y='#fbbf24',GR='#22c55e',RB='#e53935';
+var st=[
+['1. Фильтрация','Кровь из артериолы попадает в капсулу Шумлянского — Боумена. Фильтруется первичная моча: вода, мочевина, креатинин, витамины. Это плазма, только без белка. Её 150–180 л в сутки.',null,[['M0 50 L42 62',RB,3,2],['M70 74 L70 104',Y,3,1.4]]],
+['2. Каналец 1-го порядка','Извитой каналец первого порядка: начинается реабсорбция — полезное возвращается обратно в кровь.',D[2],[[D[2],Y,4,4],['M70 130 L104 130',GR,2,2],['M70 160 L104 160',GR,2,2]]],
+['3. Петля Генле','Петля уходит в мозговое вещество и возвращается в кору. Реабсорбция продолжается.',D[3],[[D[3],Y,5,7],['M70 250 L104 250',GR,2,2.4],['M130 250 L104 250',GR,2,2.4]]],
+['4. Каналец 2-го порядка','Извитой каналец второго порядка: заканчивает реабсорбцию. Возвращаются вода, глюкоза и другие нужные вещества.',D[4],[[D[4],Y,3,4],['M160 158 L108 196',GR,2,2]]],
+['5. Собирательная трубка','Сюда стекает вторичная моча. За сутки её около 1,5 л. Дальше — сосочек, малая чашка, лоханка, мочеточник.',D[5],[[D[5],Y,3,5]]]];
+var stepsEl=document.getElementById('steps'),still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function setStep(n){
+for(var i=0;i<5;i++){stepsEl.children[i].setAttribute('aria-selected',i==n);seg[i+1].setAttribute('opacity',i==n?1:.45)}
+flow.setAttribute('d',st[n][2]||'');
+G.textContent='';
+if(!still)st[n][3].forEach(function(p){for(var k=0;k<p[2];k++){var c=el(G,'circle',{r:p[1]==Y?4:3,fill:p[1]});el(c,'animateMotion',{dur:p[3]+'s',repeatCount:'indefinite',begin:(-k*p[3]/p[2])+'s',path:p[0]})}});
+document.getElementById('infoN').innerHTML='<b>'+st[n][0]+'</b>'+st[n][1];
+var big=n<4;
+document.getElementById('vol').textContent=big?'Первичная моча: 150–180 л':'Вторичная моча: около 1,5 л';
+document.getElementById('barI').style.width=big?'100%':'3%'}
+st.forEach(function(s,i){var b=document.createElement('button');b.textContent=i+1;b.style.borderBottom='3px solid '+C[i];b.setAttribute('aria-label',s[0]);b.onclick=function(){setStep(i)};stepsEl.appendChild(b)});
+setStep(0);
+
+var kt=document.querySelectorAll('#ktabs button');
+function showK(t){document.querySelectorAll('#kstage section').forEach(function(s){s.classList.toggle('on',s.id===t)});
+ document.querySelectorAll('.kb').forEach(function(b){b.hidden=b.dataset['for']!==t});
+ kt.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.t===t)})}
+kt.forEach(function(b){b.onclick=function(){showK(b.dataset.t)}});showK('system');
+
+});
+HEART_JS();KIDNEY_JS();
+var $=function(i){return document.getElementById(i)};
+var obtn=document.querySelectorAll('#organs button');
+function showO(o){
+ if(o!=='kidney')o='heart';
+ window.__heartOn=o==='heart';
+ $('heartStage').hidden=o!=='heart';$('kidneyStage').hidden=o!=='kidney';
+ $('hp').hidden=o!=='heart';$('kp').hidden=o!=='kidney';$('ktabs').hidden=o!=='kidney';
+ obtn.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.o===o)});
+}
+obtn.forEach(function(b){b.onclick=function(){location.hash=b.dataset.o}});
+addEventListener('hashchange',function(){showO(location.hash.slice(1))});
+showO(location.hash.slice(1));
+$('grid').onclick=function(e){var on=$('view').classList.toggle('nogrid');e.target.setAttribute('aria-pressed',!on)};
+$('home').onclick=function(){location.href='index.html'};
+})();
+</script>
+</body></html>
