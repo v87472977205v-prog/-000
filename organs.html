@@ -24,12 +24,13 @@ html,body{margin:0;height:100%;background:#000;color:#ececf0;font:15px/1.4 syste
  background-size:36px 36px;background-position:center;
  -webkit-mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%)}
 #view.nogrid::before{display:none}
-.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px 16px 76px}
+.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px 16px 76px}
 .stage[hidden]{display:none}
 .stage svg{width:100%;height:100%;max-width:680px;display:block;overflow:visible}
 #kstage section{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:16px}
 #kstage section.on{display:flex}
 #kstage{padding:0}
+#kidneyStage{padding:0}
 .cap{position:absolute;left:14px;right:14px;bottom:12px;pointer-events:none}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.75rem;color:#8a8d97}
 .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
@@ -90,9 +91,55 @@ dt{display:flex;align-items:center;gap:8px}dd{margin:0;font-weight:600;text-alig
 @media (max-width:760px){
  #app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46vh)}
  #panel{border-left:0;border-top:1px solid #2b2b2b}
- .stage{padding:10px 18px 84px}
+ .stage{padding:26px 18px 84px}
 }
+
+/* меню органов — тот же вид, что у главного меню атласа */
+#orgMenu{position:fixed;inset:0;z-index:9000;background:#000;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
+#orgMenu[hidden]{display:none}
+#orgMenu .wl{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;text-align:center;margin:auto}
+#orgMenu .wl>*{animation:sp-up .7s ease both}
+#orgMenu .wl>:nth-child(2){animation-delay:.08s}#orgMenu .wl>:nth-child(3){animation-delay:.16s}#orgMenu .wl>:nth-child(4){animation-delay:.26s}
+#orgMenu h1{margin:0 0 8px;font-size:clamp(1.05rem,5.2vw,1.4rem);font-weight:300;letter-spacing:.26em;padding-left:.26em;text-transform:uppercase;color:#fff}
+#orgMenu .ask{margin:0 0 30px;font-size:.8rem;letter-spacing:.14em;color:rgba(255,255,255,.45)}
+#orgMenu .secs{width:100%;display:flex;flex-direction:column;gap:12px}
+#orgMenu .sec{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:18px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff;font:inherit;text-align:left;cursor:pointer;transition:border-color .2s ease,background .2s ease,transform .15s ease}
+#orgMenu .sec b{display:block;font-size:1.05rem;font-weight:500;letter-spacing:.05em}
+#orgMenu .sec em{display:block;margin-top:4px;font-style:normal;font-size:.8rem;line-height:1.35;color:rgba(255,255,255,.5)}
+#orgMenu .sec i{flex:none;font-style:normal;font-size:1.3rem;color:rgba(255,255,255,.6);transition:transform .2s ease}
+#orgMenu .sec:hover,#orgMenu .sec:focus-visible{border-color:rgba(255,255,255,.75);background:rgba(255,255,255,.05);outline:none}
+#orgMenu .sec:hover i{transform:translateX(4px)}
+#orgMenu .sec:active{transform:scale(.985)}
+#orgMenu .back{margin-top:26px;border:0;background:transparent;color:rgba(255,255,255,.55);font-size:.85rem;letter-spacing:.08em;padding:10px 14px}
+#orgMenu .back:hover{color:#fff;border:0}
+@keyframes sp-up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#orgMenu .wl>*{animation:none}}
+/* заголовок панели и кнопка «развернуть» */
+#head{position:relative}
+#head h1{padding-right:52px}
+#fs{position:absolute;top:10px;right:10px;width:42px;height:42px;padding:0;font-size:1.25rem;display:flex;align-items:center;justify-content:center;border-radius:10px}
+#fsx{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:10px;z-index:50;height:42px;padding:0 14px;border-radius:10px;border:1.5px solid #fff;font-weight:600;font-size:.95rem;display:none}
+/* на весь экран: схема + нижняя панель с управлением фазами */
+body.fsm #app{position:fixed;inset:0;z-index:5;background:#000;display:flex;flex-direction:column}
+body.fsm #view{flex:1;min-height:0}
+body.fsm #panel{flex:none;max-height:42vh;border-left:0;border-top:1px solid #2b2b2b}
+body.fsm #fsx{display:block}
+body.fsm #head>*:not(#ktabs){display:none}
+body.fsm #head{padding:0;border:0}
+body.fsm #head #ktabs:not([hidden]){display:flex;margin:10px 14px}
+body.fsm .info{min-height:0}
+body.fsm #ph dl,body.fsm .foot{display:none}
+body.fsm .stage{padding:calc(56px + env(safe-area-inset-top,0px)) 14px 76px}
+body.fsm #kstage section{padding:calc(56px + env(safe-area-inset-top,0px)) 14px 14px}
 </style></head><body>
+<div id="orgMenu" role="dialog" aria-label="Выбор органа" hidden><div class="wl">
+ <h1>Органы</h1><p class="ask">Выберите орган</p>
+ <div class="secs">
+  <button type="button" class="sec" data-go="heart"><span><b>Сердце</b><em>Систола и диастола, клапаны, путь крови</em></span><i>›</i></button>
+  <button type="button" class="sec" data-go="kidney"><span><b>Почка</b><em>Мочевая система, разрез почки, нефрон</em></span><i>›</i></button>
+ </div>
+ <button type="button" class="back" id="toMain">← Главное меню</button>
+</div></div>
 <div id="app">
  <div id="view">
   <div class="stage" id="heartStage">
@@ -157,10 +204,10 @@ dt{display:flex;align-items:center;gap:8px}dd{margin:0;font-weight:600;text-alig
  </div>
  <aside id="panel">
   <div id="head">
-   <h1>Атлас органов</h1>
-   <div class="row" id="organs"><button data-o="heart" aria-pressed="true">Сердце</button><button data-o="kidney" aria-pressed="false">Почка</button></div>
+   <button id="fs" aria-label="Развернуть на весь экран" title="Развернуть на весь экран">⤢</button>
+   <h1 id="ttl">Атлас сердца</h1>
    <div class="row" id="ktabs" hidden><button data-t="system">Система</button><button data-t="kidney">Разрез</button><button data-t="nephron">Нефрон</button></div>
-   <div class="row"><button id="grid" aria-pressed="true">Сетка</button><button id="home">☰ Меню</button></div>
+   <div class="row"><button id="grid" aria-pressed="true">Сетка</button><button id="back">← Органы</button><button id="home">☰ Меню</button></div>
   </div>
 
   <div class="pp" id="hp">
@@ -193,6 +240,7 @@ dt{display:flex;align-items:center;gap:8px}dd{margin:0;font-weight:600;text-alig
   </div>
  </aside>
 </div>
+<button id="fsx" class="fsbtn" aria-label="Свернуть">✕ Свернуть</button>
 <script>
 (function(){
 var HEART_JS=(function(){
@@ -400,19 +448,28 @@ kt.forEach(function(b){b.onclick=function(){showK(b.dataset.t)}});showK('system'
 });
 HEART_JS();KIDNEY_JS();
 var $=function(i){return document.getElementById(i)};
-var obtn=document.querySelectorAll('#organs button');
-function showO(o){
- if(o!=='kidney')o='heart';
+var TITLES={heart:'Атлас сердца',kidney:'Атлас почки'};
+function enterFs(){document.body.classList.add('fsm');var e=document.documentElement;if(e.requestFullscreen){try{e.requestFullscreen().catch(function(){})}catch(x){}}}
+function exitFs(){document.body.classList.remove('fsm');if(document.fullscreenElement&&document.exitFullscreen){try{document.exitFullscreen().catch(function(){})}catch(x){}}}
+document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement)document.body.classList.remove('fsm')});
+function route(){
+ var o=location.hash.slice(1);
+ if(o!=='heart'&&o!=='kidney'){
+  exitFs();window.__heartOn=false;$('orgMenu').hidden=false;$('app').style.visibility='hidden';return}
+ $('orgMenu').hidden=true;$('app').style.visibility='';
  window.__heartOn=o==='heart';
+ $('ttl').textContent=TITLES[o];
  $('heartStage').hidden=o!=='heart';$('kidneyStage').hidden=o!=='kidney';
  $('hp').hidden=o!=='heart';$('kp').hidden=o!=='kidney';$('ktabs').hidden=o!=='kidney';
- obtn.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.o===o)});
 }
-obtn.forEach(function(b){b.onclick=function(){location.hash=b.dataset.o}});
-addEventListener('hashchange',function(){showO(location.hash.slice(1))});
-showO(location.hash.slice(1));
-$('grid').onclick=function(e){var on=$('view').classList.toggle('nogrid');e.target.setAttribute('aria-pressed',!on)};
+document.querySelectorAll('#orgMenu [data-go]').forEach(function(b){b.onclick=function(){location.hash=b.dataset.go}});
+$('toMain').onclick=function(){location.href='index.html'};
+$('back').onclick=function(){exitFs();location.hash='menu'};
 $('home').onclick=function(){location.href='index.html'};
+$('fs').onclick=enterFs;$('fsx').onclick=exitFs;
+$('grid').onclick=function(e){var on=$('view').classList.toggle('nogrid');e.target.setAttribute('aria-pressed',!on)};
+addEventListener('hashchange',route);
+route();
 })();
 </script>
 </body></html>
