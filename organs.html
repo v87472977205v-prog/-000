@@ -131,6 +131,28 @@ body.fsm .info{min-height:0}
 body.fsm #ph dl,body.fsm .foot{display:none}
 body.fsm .stage{padding:calc(56px + env(safe-area-inset-top,0px)) 14px 76px}
 body.fsm #kstage section{padding:calc(56px + env(safe-area-inset-top,0px)) 14px 14px}
+
+/* конспект */
+#notesOv{position:fixed;inset:0;z-index:20;background:#000;display:flex;flex-direction:column}
+#notesOv[hidden]{display:none}
+#nHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;border-bottom:1px solid #2b2b2b}
+#nHead h1{margin:0;font-size:1.05rem}
+#nHead .row{flex:none;flex-wrap:nowrap}
+#nBody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
+#nIn{max-width:640px;margin:0 auto;padding:6px 14px 40px}
+#nLeg{padding:12px 0 6px;font-size:.8rem;color:#8a8d97}
+mark{background:rgba(61,220,132,.2);color:#fff;border-radius:3px;padding:0 3px;box-shadow:inset 0 -1px 0 rgba(61,220,132,.5)}
+#nIn details{border-bottom:1px solid #2b2b2b}
+#nIn summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 2px;font-size:1.05rem;font-weight:500;color:#fff}
+#nIn summary::-webkit-details-marker{display:none}
+#nIn summary::after{content:"›";font-size:1.3rem;color:rgba(255,255,255,.6);transition:transform .2s ease}
+#nIn details[open] summary::after{transform:rotate(90deg)}
+#nIn summary:focus-visible{outline:2px solid #3ddc84;outline-offset:2px}
+.nb{padding:0 2px 14px;font-size:1rem;line-height:1.6;color:#a2a5ae}
+.nb p{margin:0 0 10px}.nb ul,.nb ol{margin:0 0 10px;padding-left:22px}.nb li{margin:4px 0}
+.nb i{color:#c9cad1}
+#nIn.focus .nb{color:#4a4d55}#nIn.focus .nb i{color:#4a4d55}#nIn.focus .nb mark{color:#fff}
+@media (prefers-reduced-motion:reduce){#nIn summary::after{transition:none}}
 </style></head><body>
 <div id="orgMenu" role="dialog" aria-label="Выбор органа" hidden><div class="wl">
  <h1>Органы</h1><p class="ask">Выберите орган</p>
@@ -140,6 +162,10 @@ body.fsm #kstage section{padding:calc(56px + env(safe-area-inset-top,0px)) 14px 
  </div>
  <button type="button" class="back" id="toMain">← Главное меню</button>
 </div></div>
+<div id="notesOv" role="dialog" aria-label="Конспект" hidden>
+ <div id="nHead"><h1 id="nTitle"></h1><div class="row"><button id="nFocus" aria-pressed="false">Только главное</button><button id="nClose" aria-label="Закрыть" style="width:42px;height:42px;padding:0;font-size:1.2rem">✕</button></div></div>
+ <div id="nBody"><div id="nIn"><div id="nLeg"><mark>Зелёным</mark> выделено главное, как в тетради</div><div id="nList"></div></div></div>
+</div>
 <div id="app">
  <div id="view">
   <div class="stage" id="heartStage">
@@ -207,7 +233,7 @@ body.fsm #kstage section{padding:calc(56px + env(safe-area-inset-top,0px)) 14px 
    <button id="fs" aria-label="Развернуть на весь экран" title="Развернуть на весь экран">⤢</button>
    <h1 id="ttl">Атлас сердца</h1>
    <div class="row" id="ktabs" hidden><button data-t="system">Система</button><button data-t="kidney">Разрез</button><button data-t="nephron">Нефрон</button></div>
-   <div class="row"><button id="grid" aria-pressed="true">Сетка</button><button id="back">← Органы</button><button id="home">☰ Меню</button></div>
+   <div class="row"><button id="notesBtn">Конспект</button><button id="grid" aria-pressed="true">Сетка</button><button id="back">← Органы</button><button id="home">☰ Меню</button></div>
   </div>
 
   <div class="pp" id="hp">
@@ -455,9 +481,9 @@ document.addEventListener('fullscreenchange',function(){if(!document.fullscreenE
 function route(){
  var o=location.hash.slice(1);
  if(o!=='heart'&&o!=='kidney'){
-  exitFs();window.__heartOn=false;$('orgMenu').hidden=false;$('app').style.visibility='hidden';return}
+  exitFs();window.__heartOn=false;$('notesOv').hidden=true;$('orgMenu').hidden=false;$('app').style.visibility='hidden';return}
  $('orgMenu').hidden=true;$('app').style.visibility='';
- window.__heartOn=o==='heart';
+ window.__heartOn=o==='heart';curO=o;$('notesOv').hidden=true;
  $('ttl').textContent=TITLES[o];
  $('heartStage').hidden=o!=='heart';$('kidneyStage').hidden=o!=='kidney';
  $('hp').hidden=o!=='heart';$('kp').hidden=o!=='kidney';$('ktabs').hidden=o!=='kidney';
@@ -468,6 +494,23 @@ $('back').onclick=function(){exitFs();location.hash='menu'};
 $('home').onclick=function(){location.href='index.html'};
 $('fs').onclick=enterFs;$('fsx').onclick=exitFs;
 $('grid').onclick=function(e){var on=$('view').classList.toggle('nogrid');e.target.setAttribute('aria-pressed',!on)};
+
+var NOTES={"heart": [{"t": "Общие понятия патологии", "h": "<ul><li><mark>Здоровье<\/mark> — физическое, психическое и социальное благополучие человека, при котором организм лучше всего приспособлен к внешней и внутренней среде.<\/li><li>Иногда действуют факторы чрезмерной силы или такие, с которыми организм раньше не встречался. Если он не справляется, возникает болезнь.<\/li><li><mark>Болезнь<\/mark> — реакция организма на патологический фактор: нарушается нормальная жизнедеятельность, ограничивается трудоспособность, снижается приспособляемость.<\/li><li><mark>Симптом<\/mark> — признак болезни. Бывают главные и общие.<\/li><li><mark>Синдром<\/mark> — совокупность симптомов, характерных для болезни. Пример — анемия: бледность кожи и слизистых, ухудшение состояния волос и ногтей, уменьшение числа эритроцитов и гемоглобина.<\/li><li>Периоды болезни: первый — <mark>скрытый (латентный) или инкубационный<\/mark>.<\/li><\/ul>"}, {"t": "Артериальная гипертензия", "h": "<p>Может протекать <mark>бессимптомно<\/mark>. Основные признаки:<\/p><ul><li><mark>головная боль<\/mark>, головокружение<\/li><li>шум в ушах<\/li><li>«мелькание мушек» в глазах<\/li><li>тошнота и рвота, слабость, бессонница<\/li><\/ul>"}, {"t": "ИБС", "h": "<ol><li>Жалобы при физической нагрузке, <mark>загрудинная боль<\/mark><\/li><li>Чувство нехватки воздуха<\/li><li><mark>Одышка<\/mark><\/li><li>Плотные отёки<\/li><li>Перебои в работе сердца (аритмия)<\/li><\/ol>"}, {"t": "Аритмия", "h": "<ol><li><mark>Неровное сердцебиение<\/mark> (или частое)<\/li><li>Головокружение, близкое к потере сознания<\/li><li>Боли в груди<\/li><\/ol>"}], "kidney": [{"t": "Мочевая система (система уринария)", "h": "<p>Выполняет <mark>выделительную (экскреторную) функцию<\/mark>: образование и выделение мочи. В неё входят:<\/p><ul><li>почки (2) — в них <mark>образуется моча<\/mark><\/li><li>мочеточники (2) — выводят мочу в мочевой пузырь<\/li><li>мочевой пузырь — резервуар для мочи<\/li><li>мочеиспускательный канал — периодически выводит мочу наружу<\/li><\/ul><p>Кроме мочи, почки вырабатывают <mark>ренин — вещество, которое регулирует уровень артериального давления<\/mark>.<\/p>"}, {"t": "Положение и оболочки", "h": "<ul><li>Почка (лат. <i>ren<\/i>): <i>dexter<\/i> — правая, <i>sinister<\/i> — левая. Масса около <mark>150 г<\/mark>.<\/li><li>Лежат <mark>забрюшинно<\/mark>, <mark>правая ниже левой<\/mark>.<\/li><li>Покрыта <mark>фиброзной капсулой<\/mark> из соединительной ткани. С почкой она сращена слабо. Вокруг почки скопление жира (жировая капсула).<\/li><li>Брюшиной почка покрыта только спереди.<\/li><li>Фиксируют почку: почечная артерия, вена и жировая капсула. Если они ослабевают, почка смещается — это <mark>блуждающая почка<\/mark>.<\/li><\/ul>"}, {"t": "Строение", "h": "<ul><li>Форма бобовидная. Есть передняя и задняя поверхности, медиальный край и латеральный (выпуклый) край.<\/li><li><mark>Ворота почки<\/mark>: через них проходят почечные артерия и вена, лимфатические сосуды, нервы и мочеточник.<\/li><li>Ворота продолжаются в <mark>почечную пазуху<\/mark>. В ней лежат большие и малые чашки, лоханка, нервы и сосуды в клетчатке.<\/li><li>Малых чашек <mark>8–12<\/mark>, больших <mark>2–3<\/mark>. Большие чашки сливаются в лоханку, лоханка переходит в мочеточник.<\/li><li>Выступ в малую чашку — <mark>сосочек<\/mark>.<\/li><li>Стенки чашек и лоханок: слизистая оболочка, один слой гладких мышечных клеток и соединительная ткань.<\/li><\/ul>"}, {"t": "Вещество почки (паренхима)", "h": "<ul><li><mark>Корковое<\/mark> — наружное, светлое.<\/li><li><mark>Мозговое<\/mark> — внутреннее, в форме <mark>пирамид<\/mark>. Корковое вещество заходит между пирамидами в виде столбов.<\/li><li>Верхушки 2–3 пирамид соединяются и образуют сосочек, он открывается в малую чашку.<\/li><\/ul>"}, {"t": "Нефрон", "h": "<p><mark>Нефрон — структурно-функциональная единица почки<\/mark>. В каждой почке около <mark>1 млн нефронов<\/mark>. Длина канальцев одного нефрона 18–50 мм.<\/p><p>Отделы нефрона по порядку:<\/p><ol><li><mark>Капсула Шумлянского — Боумена<\/mark><\/li><li>Извитой каналец 1-го порядка<\/li><li><mark>Петля Генле<\/mark><\/li><li>Извитой каналец 2-го порядка<\/li><li>Собирательная трубка<\/li><\/ol><p>Два этапа: <mark>фильтрация<\/mark> (в капсуле) и <mark>реабсорбция<\/mark> (в канальцах).<\/p><ul><li><mark>Первичная моча<\/mark> — 150–180 л в сутки: вода, мочевина, креатинин, витамины. Это плазма, только без белка.<\/li><li><mark>Вторичная моча<\/mark> — около 1,5 л. В конспекте у неё записаны: H₂O, гормоны, глюкоза.<\/li><\/ul>"}]};
+var NT={heart:'Сердце: патологии',kidney:'Почки: конспект'};
+var curO='heart';
+function openNotes(){
+ var L=$('nList');L.textContent='';
+ (NOTES[curO]||[]).forEach(function(sec,i){
+  var d=document.createElement('details');if(i===0)d.open=true;
+  var sm=document.createElement('summary');sm.textContent=sec.t;
+  var b=document.createElement('div');b.className='nb';b.innerHTML=sec.h;
+  d.append(sm,b);L.appendChild(d)});
+ $('nTitle').textContent=NT[curO];$('nBody').scrollTop=0;$('notesOv').hidden=false;
+}
+$('notesBtn').onclick=openNotes;
+$('nClose').onclick=function(){$('notesOv').hidden=true};
+$('nFocus').onclick=function(e){var on=$('nIn').classList.toggle('focus');e.target.setAttribute('aria-pressed',on)};
+addEventListener('keydown',function(e){if(e.key==='Escape')$('notesOv').hidden=true});
 addEventListener('hashchange',route);
 route();
 })();
